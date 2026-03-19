@@ -1,0 +1,694 @@
+{
+    "playerstats": {
+      "steamID": "76561198968224146",
+      "gameName": "Terraria",
+      "achievements": [
+        {
+          "apiname": "TIMBER",
+          "achieved": 1,
+          "unlocktime": 1758219365
+        },
+        {
+          "apiname": "NO_HOBO",
+          "achieved": 1,
+          "unlocktime": 1758221279
+        },
+        {
+          "apiname": "OBTAIN_HAMMER",
+          "achieved": 1,
+          "unlocktime": 1758222915
+        },
+        {
+          "apiname": "OOO_SHINY",
+          "achieved": 1,
+          "unlocktime": 1758220066
+        },
+        {
+          "apiname": "HEART_BREAKER",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "HEAVY_METAL",
+          "achieved": 1,
+          "unlocktime": 1758223180
+        },
+        {
+          "apiname": "I_AM_LOOT",
+          "achieved": 1,
+          "unlocktime": 1758223167
+        },
+        {
+          "apiname": "STAR_POWER",
+          "achieved": 1,
+          "unlocktime": 1758224327
+        },
+        {
+          "apiname": "HOLD_ON_TIGHT",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "EYE_ON_YOU",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "SMASHING_POPPET",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "WORM_FODDER",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "MASTERMIND",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "WHERES_MY_HONEY",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "STING_OPERATION",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "BONED",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "DUNGEON_HEIST",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "ITS_GETTING_HOT_IN_HERE",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "MINER_FOR_FIRE",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "STILL_HUNGRY",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "ITS_HARD",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "BEGONE_EVIL",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "EXTRA_SHINY",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "HEAD_IN_THE_CLOUDS",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "LIKE_A_BOSS",
+          "achieved": 1,
+          "unlocktime": 1758226923
+        },
+        {
+          "apiname": "BUCKETS_OF_BOLTS",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "DRAX_ATTAX",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "PHOTOSYNTHESIS",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "GET_A_LIFE",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "THE_GREAT_SOUTHERN_PLANTKILL",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "TEMPLE_RAIDER",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "LIHZAHRDIAN_IDOL",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "ROBBING_THE_GRAVE",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "BIG_BOOTY",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "FISH_OUT_OF_WATER",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "OBSESSIVE_DEVOTION",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "STAR_DESTROYER",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "CHAMPION_OF_TERRARIA",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "BLOODBATH",
+          "achieved": 1,
+          "unlocktime": 1758229109
+        },
+        {
+          "apiname": "SLIPPERY_SHINOBI",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "GOBLIN_PUNTER",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "WALK_THE_PLANK",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "KILL_THE_SUN",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "DO_YOU_WANT_TO_SLAY_A_SNOWMAN",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "TIN_FOIL_HATTER",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "BALEFUL_HARVEST",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "ICE_SCREAM",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "STICKY_SITUATION",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "REAL_ESTATE_AGENT",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "NOT_THE_BEES",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "JEEPERS_CREEPERS",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "FUNKYTOWN",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "INTO_ORBIT",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "ROCK_BOTTOM",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "MECHA_MAYHEM",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "GELATIN_WORLD_TOUR",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "FASHION_STATEMENT",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "VEHICULAR_MANSLAUGHTER",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "BULLDOZER",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "THERE_ARE_SOME_WHO_CALL_HIM",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "DECEIVER_OF_FOOLS",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "SWORD_OF_THE_HERO",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "LUCKY_BREAK",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "THROWING_LINES",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "DYE_HARD",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "SICK_THROW",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "FREQUENT_FLYER",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "THE_CAVALRY",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "COMPLETELY_AWESOME",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "TIL_DEATH",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "ARCHAEOLOGIST",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "PRETTY_IN_PINK",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "RAINBOWS_AND_UNICORNS",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "YOU_AND_WHAT_ARMY",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "PRISMANCER",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "IT_CAN_TALK",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "WATCH_YOUR_STEP",
+          "achieved": 1,
+          "unlocktime": 1758226353
+        },
+        {
+          "apiname": "MARATHON_MEDALIST",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "GLORIOUS_GOLDEN_POLE",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "SERVANT_IN_TRAINING",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "GOOD_LITTLE_SLAVE",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "TROUT_MONKEY",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "FAST_AND_FISHIOUS",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "SUPREME_HELPER_MINION",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "TOPPED_OFF",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "SLAYER_OF_WORLDS",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "YOU_CAN_DO_IT",
+          "achieved": 1,
+          "unlocktime": 1758220469
+        },
+        {
+          "apiname": "MATCHING_ATTIRE",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "BENCHED",
+          "achieved": 1,
+          "unlocktime": 1758222680
+        },
+        {
+          "apiname": "DEFEAT_EMPRESS_OF_LIGHT",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "DEFEAT_QUEEN_SLIME",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "DEFEAT_DREADNAUTILUS",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "DEFEAT_OLD_ONES_ARMY_TIER3",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "GET_ZENITH",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "GET_TERRASPARK_BOOTS",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "FLY_A_KITE_ON_A_WINDY_DAY",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "FOUND_GRAVEYARD",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "GO_LAVA_FISHING",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "TURN_GNOME_TO_STATUE",
+          "achieved": 1,
+          "unlocktime": 1758220699
+        },
+        {
+          "apiname": "TALK_TO_NPC_AT_MAX_HAPPINESS",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "PET_THE_PET",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "FIND_A_FAIRY",
+          "achieved": 1,
+          "unlocktime": 1758228450
+        },
+        {
+          "apiname": "THROW_A_PARTY",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "DIE_TO_DEAD_MANS_CHEST",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "DEFEAT_DEERCLOPS",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "GET_GOLDEN_DELIGHT",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "DRINK_BOTTLED_WATER_WHILE_DROWNING",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "GET_CELL_PHONE",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "GET_ANKH_SHIELD",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "GAIN_TORCH_GODS_FAVOR",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "PLAY_ON_A_SPECIAL_SEED",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "ALL_TOWN_SLIMES",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "TRANSMUTE_ITEM",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "PURIFY_ENTIRE_WORLD",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "TO_INFINITY_AND_BEYOND",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "BOOK_WORM",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "BOULDER_LORD",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "QUEEN_MACHINE",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "ROLLIN_IN_YOUR_GRAVE",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "FEAR_THE_SUN",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "ITS_SHALING_OUTSIDE",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "EXTRA_LIFE",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "GRAVE_MISTAKE",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "SPICY_LICKS",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "ORGANIZED_CHAOS",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "ON_FLEEK",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "FORTUNE_FAVORS_THE_BOULD",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "TRAINING_DAY",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "MINI_ME",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "TERRARIST",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "NEW_DIGS",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "MY_PEOPLE_NEED_ME",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "GOING_OLDSCHOOL",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "SEA_YOU_LATER",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "TRASH_COMPACTOR",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "CONSERVATIONIST",
+          "achieved": 0,
+          "unlocktime": 0
+        },
+        {
+          "apiname": "INTERDIMENSIONAL_RECYCLING",
+          "achieved": 0,
+          "unlocktime": 0
+        }
+      ],
+      "success": true
+    }
+  }

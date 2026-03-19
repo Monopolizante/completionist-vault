@@ -1,20 +1,35 @@
 import { useState } from 'react'
 import './App.css'
 import axios from "axios";
-import 'dotenv/config';
-import dotenv from 'dotenv';
-dotenv.config();
 
-const API_KEY = process.env.API_KEY;
+
+const apiPort = 3000
 function App() {
-  const pegarSinonimos = async () => {
+  const [jogo, setJogo] = useState("")
+  const [conquistas, setConquistas] = useState([])
+  const pegarInformacoes = async () => {
     try{
-      console.log()
+      const response = await axios.get(`http://localhost:${apiPort}/dados/jogo`)
+      const respostaRefinada = response.data.game
+      console.log(response)
+      setJogo(respostaRefinada.gameName)
+      setConquistas(respostaRefinada.availableGameStats.achievements)
+
     } catch (error){
       console.log(error)
     }}
   return (
-    <>  
+    <>
+      <div>
+        <button onClick={pegarInformacoes}>Teste</button>
+        <p>{jogo}</p>
+        <ul>
+          {conquistas.map((value, index) => (
+            <li>{value.displayName}</li>
+          ))}
+        </ul>
+        
+      </div> 
     </>
   )
 }
