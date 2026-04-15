@@ -5,7 +5,7 @@ function App() {
 
   return (
     <>  
-      <h1>Teste Aura</h1>
+      
     </>
   )
 }
