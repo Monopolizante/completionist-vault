@@ -1,8 +1,10 @@
-import { useState } from 'react'
-import './App.css'
-import Formulario from './Components/Formulario';
-import Home from './Pages/Home'
-
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar'; // Componente fixo
+import MainPage from './Pages/MainPage';
+import Games from './Pages/Games';
+import Login from './Pages/Login';
+import Cadastro from './Pages/Cadastro';
+import './App.css';
 
 function App() {
   
@@ -26,4 +28,4 @@ function App() {
     )
 }
 
-export default App
+export default App;
