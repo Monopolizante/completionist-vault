@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import './App.css'
-import Home from './pages/Home';
-import Formulario from './pages/Formulario';
+import Home from './Pages/Home';
+import Formulario from './Pages/Formulario';
+
 
 function App() {
   const [tela, setTela] = useState()
@@ -12,6 +13,7 @@ function App() {
               <div className={"buttons-div"}>
                   <button onClick={() => setTela(<Home />)}>Home</button>
                   <button onClick={() => setTela(<Formulario />)}>Formulário</button>
+                  
               </div>
           </nav>
           {tela}
