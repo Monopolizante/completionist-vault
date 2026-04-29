@@ -1,3 +1,11 @@
+:root{
+    --Sea-500: #0d1b2a;
+    --Sea-400: #1b263b;
+    --Sea-300: #415a77;
+    --Sea-200: #778da9;
+    --Sea-100: #e0e1dd;
+}
+
 .home-main h3 {
     display: flex;
     align-items: center;
@@ -8,4 +16,73 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.form-container {
+    display: grid;
+    place-items: center;
+    padding: 4rem;
+}
+
+.form {
+    display: grid;
+    place-items: center;
+    max-width: 400px;
+    border-radius: 0.5rem;
+    background-color: var(--Sea-300);
+    display: block;
+    padding: 1rem;
+    box-shadow: 0 10px 15px -3px var(--Sea-500), o 4px 6px -2px var(--Sea-500);
+
+}
+
+.form-title {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    font-family: inherit;
+    font-weight: 900;
+    text-align: center;
+    color: var(--Sea-100);
+    background-color: var(--Sea-300);
+}
+
+.input-container {
+    position: relative;
+    color: var(--Sea-100);  
+    background-color: var(--Sea-300);
+    
+}
+
+.input-container input {
+    background-color: var(--Sea-300);
+    padding: 1rem;
+    padding-right: 3rem;
+    font-size: 0.8rem;
+    line-height: 1rem;
+    width: 300px;
+    border-radius: 0.5rem;
+    box-shadow: var(--Sea-500);
+    outline: none;
+    border: 2px solid var(--Sea-500);
+    margin: 8px 0;
+    color: var(--Sea-100);
+
+}
+
+.submit {
+    display: block;
+    padding-top: 0.8;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    color: var(--Sea-100);
+    font-size: 1rem;
+    
+}
+
+.signup-link {
+    background-color: var(--Sea-300);   
+}
+
+.signup-link a {
+    background-color: var(--Sea-300);
 }

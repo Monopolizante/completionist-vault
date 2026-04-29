@@ -1,4 +1,14 @@
+:root{
+    --Sea-500: #0d1b2a;
+    --Sea-400: #1b263b;
+    --Sea-300: #415a77;
+    --Sea-200: #778da9;
+    --Sea-100: #e0e1dd;
+}
+
+
 *{
-    margin: 0;
-    padding: 0;
+    background-color: var(--Sea-400);
+    color: var(--Sea-100);
+    
 }

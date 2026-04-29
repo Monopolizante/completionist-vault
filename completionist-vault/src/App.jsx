@@ -7,8 +7,8 @@ import Formulario from './Pages/Formulario';
 function App() {
   const [tela, setTela] = useState()
   return(
-      <div>
-          <nav>
+      <div className='prog-content'>
+          <nav className={"nav-content"}>
               <h2 className={"nav-header"}>Completionist Vault</h2>
               <div className={"buttons-div"}>
                   <button onClick={() => setTela(<Home />)}>Home</button>
