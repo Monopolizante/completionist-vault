@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import './pages.css'
 import axios from 'axios'
 
 function Home() {
