@@ -13,7 +13,6 @@ function App() {
       <div className={"div-app"}>
         <header>
           <nav>
-          <span className="vaadin--medal"></span>
           <div className={"nav-bar"}>
             <button onClick={() => setTela(<Home />)}>Página Inicial</button>
             <button onClick={() => setTela(<Cadastro />)}>Cadastro</button>
