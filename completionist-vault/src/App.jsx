@@ -1,26 +1,31 @@
+import React from 'react'
 import { useState } from 'react'
-import './App.css'
-import Home from './Pages/Home';
-import Formulario from './Pages/Formulario';
 import Games from './Pages/Games';
-
+import Login from './Pages/Login';
+import Home from './Pages/Home'
+import Cadastro from './Pages/Cadastro';
+import './App.css';
 
 function App() {
-  const [tela, setTela] = useState()
-  return(
-      <div className='prog-content'>
-          <nav className={"nav-content"}>
-              <h2 className={"nav-header"}>Completionist Vault</h2>
-              <div className={"buttons-div"}>
-                  <button onClick={() => setTela(<Home />)}>About</button>
-                  <button onClick={() => setTela(<Games />)}>Games</button>
-                  <button onClick={() => setTela(<Formulario />)}>Login</button>
-                  
-              </div>
+  
+  const [tela, setTela] = useState(<Home />)
+    return (
+      <div className={"div-app"}>
+        <header>
+          <nav>
+          <span className="vaadin--medal"></span>
+          <div className={"nav-bar"}>
+            <button onClick={() => setTela(<Home />)}>Página Inicial</button>
+            <button onClick={() => setTela(<Cadastro />)}>Cadastro</button>
+          </div>
           </nav>
+        </header>
+        <main className={"main"}>
           {tela}
+        </main>
       </div>
-  )
+
+    )
 }
 
-export default App
+export default App;
