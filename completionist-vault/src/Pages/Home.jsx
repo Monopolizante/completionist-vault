@@ -4,7 +4,9 @@ import axios from 'axios'
 function Home() {
     const portaAPI = 3000
     const pegarDados = async () => {
-        const response = await axios.get(`http://localhost:${portaAPI}/dados/jogo`)
+        const response = await axios.get(`http://localhost:${portaAPI}/dados/jogo`, {withCredentials: true})
+        const user_info = await axios.get(`http://localhost:${portaAPI}/api/user`, {withCredentials: true})
+        console.log(user_info)
         console.log(response)
         setJogo(response.data.game.gameName)
     }

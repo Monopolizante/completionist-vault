@@ -4,7 +4,7 @@ function Login() {
     
     return (
         <div className="page-content">
-            
+            <a href='http://localhost:3000/'>Login</a>
         </div>
     );
 }
