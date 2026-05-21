@@ -1,0 +1,75 @@
+:root{
+    --Sea-500: #0d1b2a;
+    --Sea-400: #1b263b;
+    --Sea-300: #415a77;
+    --Sea-200: #778da9;
+    --Sea-100: #e0e1dd;
+    --Sea-90: #fdfdfd;
+}
+.prog-content{
+    font-family: inherit;
+    font-weight: 1000;
+}
+
+
+.nav-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 2px;
+
+}
+.buttons-div{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    max-width: 360px;
+    margin: 2px;
+    gap: 10px;
+
+}
+
+button {
+    position: relative;
+    cursor: pointer;
+    color: var(--Sea-100);
+    text-transform: uppercase;
+    font-size: 15px;
+    font-weight: 900;
+    font-family: inherit;
+    border: none;
+    background: none;
+    transition-duration: 400ms;
+    transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition-property: color;
+    
+}
+
+button:focus, button:hover {
+    color: var(--Sea-90);
+}
+
+button:focus:after, 
+button:hover:after {
+    width: 100%;
+    left: 0%;
+}
+
+button::after {
+    position: absolute;
+    height: 2px;
+    content: "";
+    pointer-events: none;
+    left: 50%;
+    bottom: -2px;
+    width: 0%;
+    background-color: var(--Sea-90);
+    transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition-duration: 400ms;
+    transition-property: width, left;
+}
+
+
+
+
+
