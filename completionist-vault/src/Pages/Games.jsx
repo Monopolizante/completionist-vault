@@ -1,9 +1,10 @@
 import React from 'react'
+import Cards from './Cards'
 
 function Games() {
     return (
-        <div>
-            <h1>Aqui tem games</h1>
+        <div className='games-cont'>
+                <Cards />
         </div>
     )
 }

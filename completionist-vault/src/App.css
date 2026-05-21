@@ -6,6 +6,10 @@
     --Sea-100: #e0e1dd;
     --Sea-90: #fdfdfd;
 }
+
+.main {
+    margin: 2rem;
+}
 .prog-content{
     font-family: inherit;
     font-weight: 1000;
