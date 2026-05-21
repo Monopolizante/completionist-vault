@@ -3,8 +3,8 @@ import Cards from './Cards'
 
 function Games() {
     return (
-        <div className='games-cont'>
-                <Cards />
+        <div>
+            <Cards />
         </div>
     )
 }
