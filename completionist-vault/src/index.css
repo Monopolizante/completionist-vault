@@ -4,11 +4,17 @@
     --Sea-300: #415a77;
     --Sea-200: #778da9;
     --Sea-100: #e0e1dd;
+
+    --magic-500: #02010a;
+    --magic-400: #04052e;
+    --magic-300: #140152;
+    --magic-200: #22007c;
+    --magic-100: #0d00a4;
 }
 
 
 *{
-    background-color: var(--Sea-400);
+    background-color: var(--Sea-500);
     color: var(--Sea-100);
     
 }

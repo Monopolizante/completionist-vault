@@ -25,6 +25,10 @@ function App() {
         <main className={"main"}>
           {tela}
         </main>
+
+        <footer>
+          © 2026 DogTeam
+        </footer>
       </div>
 
     )

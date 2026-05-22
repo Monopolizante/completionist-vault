@@ -5,10 +5,33 @@
     --Sea-200: #778da9;
     --Sea-100: #e0e1dd;
     --Sea-90: #fdfdfd;
+
+    --magic-500: #02010a;
+    --magic-400: #04052e;
+    --magic-300: #140152;
+    --magic-200: #22007c;
+    --magic-100: #0d00a4;
+}
+@font-face {
+    font-family: 'clash-bold';
+    src: url('src/Components/Fonts/Clash-OTF/ClashDisplay-Bold.otf');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'clash-medium';
+    src: url('src/Components/Fonts/Clash-OTF/ClashDisplay-Medium.otf');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'clash-semibold';
+    src: url('src/Components/Fonts/Clash-OTF/ClashDisplay-Semibold.otf');
 }
 
+
 body {
-    background: var(--Sea-500);
+    background: var(--magic-500);
 }
 .games-list{
   width: 90%;
@@ -24,7 +47,7 @@ body {
 .game-card{
     width: 100%;
 
-    background: var(--Sea-500);
+    background: var(--magic-400);
 
     display: flex;
     align-items: center;
@@ -41,7 +64,7 @@ body {
 }
 
 .game-card:hover {
-    background: var(--Sea-200);
+    background: var(--magic-200);
     transform: translateY(-2px);
 }
 
@@ -65,12 +88,14 @@ body {
 
 
 .game-info h3{
+    font-family: clash-bold;
     padding: 10px;
     font-size: 20px;
     background: transparent;
 }
 
 .game-info p{
+    font-family: clash-semibold;
   margin: 4px 0 0;
   color: #9ca3af;
   font-size: 14px;
@@ -87,7 +112,7 @@ body {
 
 .achievements-total span{
     font-size: 15px;
-    color: var(--Sea-100);
+    color: var(--magic-100);
     font-weight: bold;
     background: transparent;
     

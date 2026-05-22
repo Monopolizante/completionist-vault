@@ -5,24 +5,39 @@
     --Sea-200: #778da9;
     --Sea-100: #e0e1dd;
     --Sea-90: #fdfdfd;
+
+    --magic-500: #02010a;
+    --magic-400: #04052e;
+    --magic-300: #140152;
+    --magic-200: #22007c;
+    --magic-100: #0d00a4;
 }
+
+@font-face {
+    font-family: 'clash-bold';
+    src: url('src/Components/Fonts/Clash-OTF/ClashDisplay-Bold.otf');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'clash-medium';
+    src: url('src/Components/Fonts/Clash-OTF/ClashDisplay-Medium.otf');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'clash-semibold';
+    src: url('src/Components/Fonts/Clash-OTF/ClashDisplay-Semibold.otf');
+}
+
 
 .main {
     margin: 2rem;
 }
-.prog-content{
-    font-family: inherit;
-    font-weight: 1000;
+.div-app{
+    font-family: clash-medium;
 }
 
-
-.nav-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin: 2px;
-
-}
 .buttons-div{
     display: flex;
     flex-direction: row;
@@ -36,7 +51,7 @@
 button {
     position: relative;
     cursor: pointer;
-    color: var(--Sea-100);
+    color: var(--Sea-90);
     text-transform: uppercase;
     font-size: 15px;
     font-weight: 900;
@@ -71,6 +86,12 @@ button::after {
     transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
     transition-duration: 400ms;
     transition-property: width, left;
+}
+
+footer{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
 }
 
 
