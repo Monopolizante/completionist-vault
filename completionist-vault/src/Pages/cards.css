@@ -1,0 +1,119 @@
+:root{
+    --Sea-500: #0d1b2a;
+    --Sea-400: #1b263b;
+    --Sea-300: #415a77;
+    --Sea-200: #778da9;
+    --Sea-100: #e0e1dd;
+    --Sea-90: #fdfdfd;
+
+    --magic-500: #02010a;
+    --magic-400: #04052e;
+    --magic-300: #140152;
+    --magic-200: #22007c;
+    --magic-100: #0d00a4;
+}
+@font-face {
+    font-family: 'clash-bold';
+    src: url('src/Components/Fonts/Clash-OTF/ClashDisplay-Bold.otf');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'clash-medium';
+    src: url('src/Components/Fonts/Clash-OTF/ClashDisplay-Medium.otf');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'clash-semibold';
+    src: url('src/Components/Fonts/Clash-OTF/ClashDisplay-Semibold.otf');
+}
+
+
+body {
+    background: var(--magic-500);
+}
+.games-list{
+  width: 90%;
+  max-width: 900px;
+  margin: auto;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 6px;
+}
+
+.game-card{
+    width: 100%;
+
+    background: var(--magic-400);
+
+    display: flex;
+    align-items: center;
+
+    padding: 12px 16px;
+
+    border-radius: 12px;
+
+    gap: 18px;
+
+    transition: 0.2s;
+
+    cursor: pointer;
+}
+
+.game-card:hover {
+    background: var(--magic-200);
+    transform: translateY(-2px);
+}
+
+.game-card img{
+    width: 220px;
+    height: 120px;
+
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.game-info{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    height: 100%;
+    padding-left: 15px;
+    background: transparent;
+}
+
+
+.game-info h3{
+    font-family: clash-bold;
+    padding: 10px;
+    font-size: 20px;
+    background: transparent;
+}
+
+.game-info p{
+    font-family: clash-semibold;
+  margin: 4px 0 0;
+  color: #9ca3af;
+  font-size: 14px;
+  background: transparent;
+  margin-left: 10px;
+}
+
+.achievements-total{
+    margin-top: 8px;
+    background: transparent;
+    margin-left: 10px;
+    
+}
+
+.achievements-total span{
+    font-size: 15px;
+    color: var(--magic-100);
+    font-weight: bold;
+    background: transparent;
+    
+}
