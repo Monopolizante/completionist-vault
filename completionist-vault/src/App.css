@@ -50,7 +50,11 @@
 button {
     position: relative;
     cursor: pointer;
+<<<<<<< HEAD
+    color: var(--Sea-90);
+=======
     color: var(--Sea-100);
+>>>>>>> a7d68c183f551d53ccdba568ddfeb62543f09e7c
     text-transform: uppercase;
     font-size: 15px;
     font-weight: 900;
@@ -88,9 +92,20 @@ button::after {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> parent of 5879297 (Cores e fontes novas)
+=======
+footer{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+=======
+>>>>>>> a7d68c183f551d53ccdba568ddfeb62543f09e7c
+
+>>>>>>> 64bc2da046ae0a3b74c87547d537c8f7d418de9a
 
 
 
