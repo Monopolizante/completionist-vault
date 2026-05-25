@@ -38,6 +38,14 @@ app.use(session({
     }
 }));
 
+const isAuthenticated = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        return next(); // User is logged in, proceed to the route handler
+    }
+    // User is not logged in, send an unauthorized error
+    res.status(401).json({ error: "Unauthorized: Please log in first." });
+};
+
 // 4. Inicializando o Passport
 app.use(passport.initialize());
 app.use(passport.session());
