@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState } from 'react'
 import Games from './Pages/Games';
+import Login from './Pages/Login';
 import Home from './Pages/Home'
 import Cadastro from './Pages/Cadastro';
 import './App.css';
@@ -12,23 +13,16 @@ function App() {
       <div className={"div-app"}>
         <header>
           <nav>
+          <span className="vaadin--medal"></span>
           <div className={"nav-bar"}>
-            <h1>Completionist Vault</h1>
-            <div className='nav-buttons'>
-              <button onClick={() => setTela(<Home />)}>Home</button>
-              <button onClick={() => setTela(<Cadastro />)}>Sign Up</button>
-              <button onClick={() => setTela(<Games />)}>Games</button>
-            </div>
+            <button onClick={() => setTela(<Home />)}>Página Inicial</button>
+            <button onClick={() => setTela(<Cadastro />)}>Cadastro</button>
           </div>
           </nav>
         </header>
         <main className={"main"}>
           {tela}
         </main>
-
-        <footer>
-          © 2026 DogTeam
-        </footer>
       </div>
 
     )

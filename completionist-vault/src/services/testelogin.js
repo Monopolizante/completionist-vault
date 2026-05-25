@@ -93,26 +93,7 @@ app.get("/dados/jogo", async (req, res) => {
     }
 });
 
-app.get("/dados/user/jogos", isAuthenticated, async (req, res) => {
-    try{
-        const response = await axios.get(`https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${API_KEY}&steamid=76561197960434622&format=json`)
-        res.json(response.data)
-    }
-    catch (error){
-        console.error(error)
-    }
-})
-
 
 app.listen(port, () =>{
     console.log(`Server running on port ${port}`);
 });
-
-// Middleware to protect API routes
-const isAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated()) {
-        return next(); // User is logged in, proceed to the route handler
-    }
-    // User is not logged in, send an unauthorized error
-    res.status(401).json({ error: "Unauthorized: Please log in first." });
-};

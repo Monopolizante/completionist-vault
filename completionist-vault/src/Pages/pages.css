@@ -4,12 +4,15 @@
     --Sea-300: #415a77;
     --Sea-200: #778da9;
     --Sea-100: #e0e1dd;
+<<<<<<< HEAD
 
     --magic-500: #02010a;
     --magic-400: #04052e;
     --magic-300: #140152;
     --magic-200: #22007c;
     --magic-100: #0d00a4;
+=======
+>>>>>>> a7d68c183f551d53ccdba568ddfeb62543f09e7c
 }
 
 .home-main h3 {
@@ -35,10 +38,17 @@
     place-items: center;
     max-width: 400px;
     border-radius: 0.5rem;
+<<<<<<< HEAD
     background-color: var(--magic-300);
     display: block;
     padding: 1rem;
     box-shadow: 0 10px 15px -3px var(--magic-500), o 4px 6px -2px var(--magic-500);
+=======
+    background-color: var(--Sea-300);
+    display: block;
+    padding: 1rem;
+    box-shadow: 0 10px 15px -3px var(--Sea-500), o 4px 6px -2px var(--Sea-500);
+>>>>>>> a7d68c183f551d53ccdba568ddfeb62543f09e7c
 
 }
 
