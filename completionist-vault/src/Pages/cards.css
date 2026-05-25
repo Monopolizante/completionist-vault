@@ -5,12 +5,6 @@
     --Sea-200: #778da9;
     --Sea-100: #e0e1dd;
     --Sea-90: #fdfdfd;
-<<<<<<< HEAD
-}
-
-body {
-    background: var(--Sea-500);
-=======
 
     --magic-500: #02010a;
     --magic-400: #04052e;
@@ -38,7 +32,6 @@ body {
 
 body {
     background: var(--magic-500);
->>>>>>> 64bc2da046ae0a3b74c87547d537c8f7d418de9a
 }
 .games-list{
   width: 90%;
@@ -54,11 +47,7 @@ body {
 .game-card{
     width: 100%;
 
-<<<<<<< HEAD
-    background: var(--Sea-500);
-=======
     background: var(--magic-400);
->>>>>>> 64bc2da046ae0a3b74c87547d537c8f7d418de9a
 
     display: flex;
     align-items: center;
@@ -75,11 +64,7 @@ body {
 }
 
 .game-card:hover {
-<<<<<<< HEAD
-    background: var(--Sea-200);
-=======
     background: var(--magic-200);
->>>>>>> 64bc2da046ae0a3b74c87547d537c8f7d418de9a
     transform: translateY(-2px);
 }
 
@@ -103,20 +88,14 @@ body {
 
 
 .game-info h3{
-<<<<<<< HEAD
-=======
     font-family: clash-bold;
->>>>>>> 64bc2da046ae0a3b74c87547d537c8f7d418de9a
     padding: 10px;
     font-size: 20px;
     background: transparent;
 }
 
 .game-info p{
-<<<<<<< HEAD
-=======
     font-family: clash-semibold;
->>>>>>> 64bc2da046ae0a3b74c87547d537c8f7d418de9a
   margin: 4px 0 0;
   color: #9ca3af;
   font-size: 14px;
@@ -133,11 +112,7 @@ body {
 
 .achievements-total span{
     font-size: 15px;
-<<<<<<< HEAD
-    color: var(--Sea-100);
-=======
     color: var(--magic-100);
->>>>>>> 64bc2da046ae0a3b74c87547d537c8f7d418de9a
     font-weight: bold;
     background: transparent;
     
