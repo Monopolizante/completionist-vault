@@ -104,9 +104,9 @@ app.get('/api/user', (req, res) => {
 // SUAS ROTAS ORIGINAIS
 // ==========================================
 
-app.get("/dados/jogo", async (req, res) => {
+app.get("/dados/jogos", async (req, res) => {
     try{
-        const response = await axios.get(`https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=${API_KEY}&appid=105600`)
+        const response = await axios.get(`https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=${API_KEY}&appid=${jogo}`)
         res.json(response.data)
     } catch (error){
         console.error(error); // Adicionado para ajudar a debugar se der erro
@@ -114,11 +114,11 @@ app.get("/dados/jogo", async (req, res) => {
     }
 });
 
-app.get("/dados/user/:id/jogos", isAuthenticated, async (req, res) => {
+app.get("/dados/user/jogos/:id", isAuthenticated, async (req, res) => {
     try{
         const id = req.params.id
         console.log(id)
-        const response = await axios.get(`https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${API_KEY}&steamid=${id}&format=json`)
+        const response = await axios.get(`https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${API_KEY}&steamid=${id}&format=json&include_appinfo=true&include_played_free_games=true`)
         res.json(response.data)
     }
     catch (error){
