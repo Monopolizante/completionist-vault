@@ -1,10 +1,16 @@
 import express from "express";
 import axios from "axios";
-import 'dotenv/config';
 import cors from "cors";
-// 1. Importando os novos pacotes (lembre de dar npm install neles)
 import session from "express-session";
 import passport from "passport";
+import dotenv from 'dotenv';
+import { fileURLToPath } from "url";
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+
 import { Strategy as SteamStrategy } from "passport-steam";
 
 const port = 3000; // Porta do Backend
@@ -16,14 +22,20 @@ app.use(cors({
     origin: URL_REACT,
     credentials: true
 }));
-
+    
 app.use(express.urlencoded({extended: true}));
 
 // 3. Configurando a Sessão (Obrigatório para o Passport funcionar)
+// Change your session setup to this:
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'uma_chave_secreta_qualquer_para_testes', // Pode colocar no .env depois
-    resave: false,
-    saveUninitialized: false
+    secret: process.env.SESSION_SECRET || 'uma_chave_secreta_qualquer_para_testes', 
+    resave: true,                // Force session to save back to the session store
+    saveUninitialized: true,     // Force an uninitialized session to be saved
+    cookie: {
+        maxAge: 24 * 60 * 60 * 1000, // Cookie lasts 1 day
+        secure: false,               // MUST be false for http://localhost (no HTTPS)
+        httpOnly: true               // Prevents client-side JS scripts from hijacking it
+    }
 }));
 
 // 4. Inicializando o Passport
@@ -43,6 +55,15 @@ passport.use(new SteamStrategy({
     return done(null, profile);
   }
 ));
+
+const isAuthenticated = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        return next(); // User is logged in, proceed to the route handler
+    }
+    // User is not logged in, send an unauthorized error
+    res.status(401).json({ error: "Unauthorized: Please log in first." });
+};
+
 
 // 6. Serialização (Salva o usuário na sessão)
 passport.serializeUser((user, done) => {
@@ -93,9 +114,11 @@ app.get("/dados/jogo", async (req, res) => {
     }
 });
 
-app.get("/dados/user/jogos", isAuthenticated, async (req, res) => {
+app.get("/dados/user/:id/jogos", isAuthenticated, async (req, res) => {
     try{
-        const response = await axios.get(`https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${API_KEY}&steamid=76561197960434622&format=json`)
+        const id = req.params.id
+        console.log(id)
+        const response = await axios.get(`https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${API_KEY}&steamid=${id}&format=json`)
         res.json(response.data)
     }
     catch (error){
@@ -109,10 +132,3 @@ app.listen(port, () =>{
 });
 
 // Middleware to protect API routes
-const isAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated()) {
-        return next(); // User is logged in, proceed to the route handler
-    }
-    // User is not logged in, send an unauthorized error
-    res.status(401).json({ error: "Unauthorized: Please log in first." });
-};
