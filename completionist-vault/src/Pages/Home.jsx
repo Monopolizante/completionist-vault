@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import "./pages.css"
+import Navbar from '../Components/Navbar'
+
+
 function Home() {
     const portaAPI = 3000
     const pegarDados = async () => {
@@ -14,6 +17,7 @@ function Home() {
     const [jogo, setJogo] = useState()
     return (
         <div className="home-main">
+            <Navbar />
             <h3>Bem vindo ao</h3>
             <h1>The Completionist Vault</h1>
             <button onClick={pegarDados}>Clique</button>

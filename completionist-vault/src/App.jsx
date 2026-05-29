@@ -4,6 +4,7 @@ import Games from './Pages/Games';
 import Home from './Pages/Home'
 import Cadastro from './Pages/Cadastro';
 import './App.css';
+import Navbar from './Components/Navbar';
 
 function App() {
   
@@ -14,11 +15,7 @@ function App() {
           <nav>
           <div className={"nav-bar"}>
             <h1>Completionist Vault</h1>
-            <div className='nav-buttons'>
-              <button onClick={() => setTela(<Home />)}>Home</button>
-              <button onClick={() => setTela(<Cadastro />)}>Sign Up</button>
-              <button onClick={() => setTela(<Games />)}>Games</button>
-            </div>
+            <Navbar />
           </div>
           </nav>
         </header>

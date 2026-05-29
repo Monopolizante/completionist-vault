@@ -1,8 +1,9 @@
 import React from 'react'
-import Cards from './Cards'
+import Cards from '../Components/Cards'
 import GameCard from '../Components/GameCard'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import Navbar from '../Components/Navbar'
 
 function Games() {
     const [userData, setUserData] = useState(null)
@@ -25,7 +26,7 @@ function Games() {
     }, [] ) // array vazio no final serve pra fazer o use effect so rodar uma vez, quando o site for montado
     return (
         <div>
-
+            <Navbar />
             <Cards />
             <GameCard />
         </div>
