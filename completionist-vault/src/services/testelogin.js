@@ -64,13 +64,6 @@ passport.use(new SteamStrategy({
   }
 ));
 
-const isAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated()) {
-        return next(); // User is logged in, proceed to the route handler
-    }
-    // User is not logged in, send an unauthorized error
-    res.status(401).json({ error: "Unauthorized: Please log in first." });
-};
 
 
 // 6. Serialização (Salva o usuário na sessão)
@@ -137,6 +130,7 @@ app.get("/dados/user/jogos/:id", isAuthenticated, async (req, res) => {
 
 app.listen(port, () =>{
     console.log(`Server running on port ${port}`);
+    console.log(`Did the API KEY load?` ,process.env.API_KEY? "yes" : "no")
 });
 
 // Middleware to protect API routes
