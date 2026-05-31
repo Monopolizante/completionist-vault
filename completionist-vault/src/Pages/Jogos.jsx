@@ -6,19 +6,17 @@ import axios from 'axios'
 import Navbar from '../Components/Navbar'
 
 function Games() {
-    const [userData, setUserData] = useState(null)
+    const [userData, setUserData] = useState([])
 
     useEffect(() =>{
         const pegarDadosUsuario =  async () => {
             try{
-                const userGames = []
                 const portaAPI = 3000
                 const userInfo = await axios.get(`http://localhost:${portaAPI}/api/user`, {withCredentials: true})
-                console.log(userInfo.data.id)
                 const dadosUser = await axios.get(`http://localhost:${portaAPI}/dados/user/jogos/${userInfo.data.id}`, {withCredentials: true})
                 const idJogosUser = dadosUser.data.response.games
+                setUserData(idJogosUser)
                 
-                console.log(dadosUser)
             }catch(err){
                 console.log(err)
             }}
@@ -27,8 +25,16 @@ function Games() {
     return (
         <div>
             <Navbar />
-            <Cards />
-            <GameCard />
+            
+            {userData.map((jogo) => {
+                const urlImagem = jogo.img_logo_url 
+                    ? `https://media.steampowered.com/steamcommunity/public/images/apps/${jogo.appid}/${jogo.img_logo_url}.jpg`
+                    : `https://cdn.cloudflare.steamstatic.com/steam/apps/${jogo.appid}/header.jpg`; // Fallback seguro
+                console.log(urlImagem)
+                return(
+                    <GameCard game={jogo} key={jogo.appid} imagemJogo={urlImagem} />
+                )
+            })}
         </div>
     )
 }
