@@ -2,10 +2,12 @@ import { createBrowserRouter } from 'react-router-dom'
 import Home from "../Pages/Home"
 import Jogos from "../Pages/Jogos"
 import Login from "../Pages/Login"
+import GamesNew from '../Pages/GamesNew'
 const router = createBrowserRouter([
     {path: "/", element: <Home />},
     {path: "/jogos", element: <Jogos />},
-    {path: "/login", element: <Login />}
+    {path: "/login", element: <Login />},
+    {path: "/Games", element: <GamesNew />}
 ])
 
 export default router

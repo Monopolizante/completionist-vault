@@ -10,7 +10,7 @@ const SteamIcon = () => (
 // Mapeamento de label → path
 const NAV_LINKS = [
   { label: "HOME",         to: "/" },
-  { label: "GAMES",        to: "/Jogos" },
+  { label: "GAMES",        to: "/Games" },
   { label: "ACHIEVEMENTS", to: "/achievements" },
 ];
 

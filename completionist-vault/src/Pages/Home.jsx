@@ -7,7 +7,7 @@ import Navbar from '../Components/Navbar'
 function Home() {
     const portaAPI = 3000
     const pegarDados = async () => {
-        const user_info = await axios.get(`http://localhost:${portaAPI}/api/user`, {withCredentials: true})
+        const user_info = await axios.get(`http://localhost:${portaAPI}/api/user`, { withCredentials: true })
         //const user_games = await axios.get(`http://localhost:${portaAPI}/dados/user/jogos`, {withCredentials: true})
         console.log(user_info)
         console.log(response)
@@ -17,11 +17,16 @@ function Home() {
     const [jogo, setJogo] = useState()
     return (
         <div className="home-main">
-            <Navbar />
+            <header>
+                <Navbar />
+            </header>
             <h3>Bem vindo ao</h3>
             <h1>The Completionist Vault</h1>
             <button onClick={pegarDados}>Clique</button>
             {jogo}
+            <footer>
+                © 2026 DogTeam
+            </footer>
         </div>
     )
 }
