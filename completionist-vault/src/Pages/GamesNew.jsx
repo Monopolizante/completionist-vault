@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../Components/Navbar';
 import "./pages.css";
-import gamesData from './gamesData'; // O arquivo foi importado como gamesData
-
+import gamesData from './gamesData'; 
 function GamesNew() {
-  // Estado para controlar a animação da barra de progresso após carregar a página
+  
   const [animateProgress, setAnimateProgress] = useState(false);
   
-  // Estado para controlar o filtro ativo
+  
   const [activeFilter, setActiveFilter] = useState(null);
 
   useEffect(() => {
@@ -18,7 +17,7 @@ function GamesNew() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Função auxiliar para definir a cor com base na porcentagem
+  
   const getPctColor = (pct) => {
     if (pct === 100) return '#f5c518';
     if (pct >= 70) return '#4caf50';
@@ -26,12 +25,12 @@ function GamesNew() {
     return '#555';
   };
 
-  // Função para gerenciar o clique nos botões de filtro
+  
   const handleFilterClick = (filterType) => {
     setActiveFilter(prevFilter => prevFilter === filterType ? null : filterType);
   };
 
-  // Filtra a lista de jogos caso haja um filtro ativo
+  
   const filteredGames = gamesData.filter(game => {
     if (activeFilter === 'recent') return game.recent;
     if (activeFilter === 'new') return game.isNew;
@@ -81,7 +80,7 @@ function GamesNew() {
         </div>
       </div>
 
-      {/* Grid de jogos renderizado nativamente pelo React */}
+      
       <div className="games-grid" id="games-grid">
         {filteredGames.map((g, index) => {
           const pctColor = getPctColor(g.pct);
