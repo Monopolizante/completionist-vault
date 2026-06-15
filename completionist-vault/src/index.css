@@ -2,21 +2,21 @@
 @import url("https://api.fontshare.com/v2/css?f[]=tanker@400&display=swap");
 @import url("https://api.fontshare.com/v2/css?f[]=poppins@100,101,200,201,300,301,400,401,500,501,600,601,700,701,800,801,900,901&display=swap");
 @import url("https://api.fontshare.com/v2/css?f[]=teko@300,400,500,600,700&display=swap");
+
 :root {
-    
+
     /* Fontes */
-    --satoshi:'Satoshi', sans-serif;
+    --satoshi: 'Satoshi', sans-serif;
     --tanker: 'Tanker', sans-serif;
     --poppins: 'Poppins', sans-serif;
-    --teko: 'Teko', sans-serif
- 
-    /* - Azul - */
+    --teko: 'Teko', sans-serif;
+        /* - Azul - */
 
     --blue-700: #1a4eb8;
     --blue-600: #2d6be0;
     --blue-500: #4e8cff;
     --blue-200: #163366;
-    --blue-50:#0e1e3a;
+    --blue-50: #0e1e3a;
 
     /* - Roxo - */
 
@@ -28,7 +28,7 @@
 
     /* - Gradiente - */
 
-    --gradient-accent: linear-gradient(90deg, #4e8cff , #a78bfa);
+    --gradient-accent: linear-gradient(90deg, #4e8cff, #a78bfa);
 
     /* - textos - */
 
@@ -38,16 +38,20 @@
     --text-diasbled: #4a5068;
 
     /* - Backgrounds - */
-    
+
     --bg-page: #0d0f14;
-    --bg-surface: #111318; /* Surface usar mais para os cards ossss*/
+    --bg-surface: #111318;
+    /* Surface usar mais para os cards ossss*/
     --bg-elevated: #161a24;
     --bg-overlay: #1b2030;
 
     /* - Bordas - */
-    --border-default: #2a3148; /*Default -_-*/
-    --border-subtle: #1e2330; /*Divisores*/
-    --border-strong: #3d4f7a; /*Foco*/
+    --border-default: #2a3148;
+    /*Default -_-*/
+    --border-subtle: #1e2330;
+    /*Divisores*/
+    --border-strong: #3d4f7a;
+    /*Foco*/
 
     /* - Conquistas ?? - */
 
@@ -55,4 +59,17 @@
     --color-progress: #f5a623;
     --color-danger: #f04040;
 
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg-page);
+    font-family: var(--poppins);
+    color: var(--text-primary);
+    min-height: 100vh;
 }

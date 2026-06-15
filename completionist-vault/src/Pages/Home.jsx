@@ -16,14 +16,31 @@ function Home() {
     }
     const [jogo, setJogo] = useState()
     return (
-        <div className="home-main">
-            <header>
-                <Navbar />
-            </header>
-            <h3>Bem vindo ao</h3>
-            <h1>The Completionist Vault</h1>
-            <button onClick={pegarDados}>Clique</button>
-            {jogo}
+        <div className="page">
+
+            <Navbar />
+
+
+            <div className='stats-bar'>
+                <div className='stats-cards'>
+                    <span className='stats-label'>Achievements</span>
+                    <span className='stats-value'> 600 </span>
+                    <span className='stats-sub'>of 1.540</span>
+                </div>
+                <div className='stats-cards'>
+                    <span className='stats-label'>Time Played</span>
+                    <span className='stats-value'> 1.050h </span>
+                    <span className='stats-sub'>Last 4 months</span>
+
+                </div>
+                <div className='stats-cards'>
+                    <span className='stats-label'>100% Completed</span>
+                    <span className='stats-value'> 4 </span>
+                    <span className='stats-sub'>perfect games</span>
+
+                </div>
+            </div>
+
             <footer>
                 © 2026 DogTeam
             </footer>
@@ -32,3 +49,8 @@ function Home() {
 }
 
 export default Home
+
+{/*             <h3>Bem vindo ao</h3>
+            <h1>The Completionist Vault</h1>
+            <button onClick={pegarDados}>Clique</button>
+            {jogo} */}
