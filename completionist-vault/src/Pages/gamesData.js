@@ -1,12 +1,14 @@
   const gamesData = [
-    { name: "Elden Ring", emoji: "⚔️", color1: "#1c1408", color2: "#3d2b0a", accent: "#d4a017", pct: 68, unlocked: 32, total: 47, hours: "124h", platform: "PC", recent: true, isNew: false },
-    { name: "Hollow Knight", emoji: "🦋", color1: "#080d18", color2: "#0f1f38", accent: "#4a9eff", pct: 92, unlocked: 52, total: 63, hours: "89h", platform: "PC", recent: false, isNew: false },
-    { name: "Cyberpunk 2077", emoji: "🌆", color1: "#1a0820", color2: "#2d0f3d", accent: "#ff4dff", pct: 45, unlocked: 28, total: 62, hours: "67h", platform: "PC", recent: false, isNew: false },
-    { name: "God of War", emoji: "🪓", color1: "#1a0808", color2: "#3d1010", accent: "#e03030", pct: 100, unlocked: 35, total: 35, hours: "42h", platform: "PC", recent: false, isNew: false },
-    { name: "Hades", emoji: "🔱", color1: "#0f0820", color2: "#1f103d", accent: "#9b59f5", pct: 78, unlocked: 34, total: 49, hours: "156h", platform: "PC", recent: true, isNew: false },
-    { name: "Resident Evil 9", emoji: "🌿", color1: "#081808", color2: "#103d10", accent: "#4caf50", pct: 55, unlocked: 22, total: 40, hours: "88h", platform: "PC", recent: false, isNew: true },
-    { name: "Sekiro", emoji: "🗡️", color1: "#0d1008", color2: "#1f2a0f", accent: "#8bc34a", pct: 20, unlocked: 8, total: 40, hours: "34h", platform: "PC", recent: false, isNew: false },
-    { name: "Baldur's Gate 3", emoji: "🎲", color1: "#08100f", color2: "#0f2520", accent: "#26a69a", pct: 33, unlocked: 18, total: 54, hours: "211h", platform: "PC", recent: true, isNew: false },
+    { name: "Like a Dragon Gaiden: The Man Who Erased His Name", image:"src/Images/Dragon.jpg", pct: 68, unlocked: 0, total: 62, hours: "2.1h", platform: "PC", recent: true, isNew: false },
+    { name: "Resident Evil 4 Remake", image:"src/Images/Re4.jpg", pct: 92, unlocked: 46, total: 46, hours: "73.3h", platform: "PC", recent: false, isNew: false },
+    { name: "Cyberpunk 2077", image:"src/Images/Cyberpunk.jpg", pct: 45, unlocked: 7, total: 57, hours: "24.1h", platform: "PC", recent: false, isNew: false },
+    { name: "Resident Evil 2 Remake", image:"src/Images/Re2.jpg", pct: 100, unlocked: 24, total: 44, hours: "11.4h", platform: "PC", recent: false, isNew: true },
+    { name: "Borderlands 3", image:"src/Images/Border3.jpg" , pct: 78, unlocked: 28, total: 81, hours: "32.8h", platform: "PC", recent: false, isNew: true },
+    { name: "Resident Evil 9 Requiem", image:"src/Images/Re9.jpg", pct: 55, unlocked: 49, total: 49, hours: "25.5h", platform: "PC", recent: false, isNew: true },
+    { name: "Balatro", image:"src/Images/balatro-pc-game-steam-cover.webp", pct: 20, unlocked: 5, total: 31, hours: "19.6h", platform: "PC", recent: false, isNew: false },
+    { name: "Baldur's Gate 3", image:"src/Images/Baldur3.jpeg", pct: 33, unlocked: 1, total: 54, hours: "27.4h", platform: "PC", recent: true, isNew: false },
+    { name: "Bloodstained: Ritual of the night", image:"src/Images/Blood.jpg", pct: 33, unlocked: 45, total: 57, hours: "6.2h", platform: "PC", recent: true, isNew: false },
+    { name: "Ratchet & Clank: Rift Apart", image:"src/Images/Ratchet.jpg", pct: 33, unlocked: 47, total: 47, hours: "18h", platform: "PC", recent: true, isNew: false }
   ];
 
   export default gamesData;
