@@ -46,12 +46,12 @@
     --bg-overlay: #1b2030;
 
     /* - Bordas - */
-    --border-default: #2a3148;
     /*Default -_-*/
-    --border-subtle: #1e2330;
+    --border-default: #2a3148;
     /*Divisores*/
-    --border-strong: #3d4f7a;
+    --border-subtle: #1e2330;
     /*Foco*/
+    --border-strong: #3d4f7a;
 
     /* - Conquistas ?? - */
 
