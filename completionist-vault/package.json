@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tabler/icons-react": "^3.44.0",
+    "@tabler/icons-webfont": "^3.44.0",
     "axios": "^1.16.0",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",

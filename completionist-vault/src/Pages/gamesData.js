@@ -8,7 +8,8 @@
     { name: "Balatro", image:"src/Images/balatro-pc-game-steam-cover.webp", pct: 20, unlocked: 5, total: 31, hours: "19.6h", platform: "PC", recent: false, isNew: false },
     { name: "Baldur's Gate 3", image:"src/Images/Baldur3.jpeg", pct: 33, unlocked: 1, total: 54, hours: "27.4h", platform: "PC", recent: true, isNew: false },
     { name: "Bloodstained: Ritual of the night", image:"src/Images/Blood.jpg", pct: 33, unlocked: 45, total: 57, hours: "6.2h", platform: "PC", recent: true, isNew: false },
-    { name: "Ratchet & Clank: Rift Apart", image:"src/Images/Ratchet.jpg", pct: 33, unlocked: 47, total: 47, hours: "18h", platform: "PC", recent: true, isNew: false }
+    { name: "Ratchet & Clank: Rift Apart", image:"src/Images/Ratchet.jpg", pct: 33, unlocked: 47, total: 47, hours: "18h", platform: "PC", recent: true, isNew: false },
+    
 
   ];
 

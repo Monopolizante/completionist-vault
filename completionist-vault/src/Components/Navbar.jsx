@@ -1,4 +1,4 @@
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import "./CompStyle.css"
 
 const SteamIcon = () => (
@@ -10,17 +10,17 @@ const SteamIcon = () => (
 
 const NAV_LINKS = [
   { label: "GAMES", to: "/Games" },
-  {label: "STATS", to: "/Profile"},
+  { label: "STATS", to: "/Stats" },
   { label: "ABOUT", to: "/About" },
 ];
 
-/**
- * Navbar — versão React Router
- *
- * Props:
- *   onSteamLogin  () => void   Callback do botão "Sign in with Steam"
- */
-export default function Navbar({ onSteamLogin }) {
+
+export default function Navbar() {
+  const navigate = useNavigate();
+  const handleSteamClick = () => {
+    navigate("/Login") //Vai levar para a pagina LoginNew... eu acho
+  }
+
   return (
     <>
       <nav className="navbar" role="navigation" aria-label="Main navigation">
@@ -53,7 +53,7 @@ export default function Navbar({ onSteamLogin }) {
           <button
             className="steam-btn"
             aria-label="Sign in with Steam"
-            onClick={onSteamLogin}
+            onClick={handleSteamClick}
           >
             <SteamIcon />
             <span>Sign in with Steam</span>
