@@ -1,0 +1,51 @@
+
+/* --- Animações para Barras Completas (100%) --- */
+
+/*Efeito de Brilho Dourado Pulsante gostoso delicia (Glow) */
+@keyframes shimmerPulse {
+  0% {
+    box-shadow: 0 0 10px rgba(245, 197, 24, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(245, 197, 24, 1), 0 0 5px rgba(255, 255, 255, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(245, 197, 24, 0.6);
+  }
+}
+
+/* Tentativ de efeito reflexo correndo pela barra */
+@keyframes shimmerRefraction {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Classe caso o jogo chegue em 100% */
+.progress-bar-fill.progress-shimmer {
+  /* Ativa as animações: glow dourado uiui e o reflexo aura */
+  animation: shimmerPulse 3s infinite ease-in-out, shimmerRefraction 2s infinite linear;
+  
+  /* Cria um reflexo mais forte no meio usando esse gradiente */
+  background-image: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0) 35%,
+    rgba(255, 255, 255, 0.884) 50%, /* brilho central */
+    rgba(255, 255, 255, 0) 65%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  
+  /* Importante para o shimmerRefraction funcionar e n explodir nadar */
+  background-size: 200% 100%;
+  position: relative; /* Faz o brilho existir */
+}
+
+/* Faz com que o brilho so fique na barra */
+.progress-bar-bg {
+  /* Sem overflow (no caso com overflow as vezes buga a barra) */
+  overflow: hidden; 
+}

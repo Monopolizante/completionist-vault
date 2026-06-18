@@ -1,26 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../Components/Navbar';
 import "./pages.css";
+import "./Animation.css"
 import gamesData from './gamesData';
 import StatsBar from '../Components/StatsBar';
 function GamesNew() {
-
   const [animateProgress, setAnimateProgress] = useState(false);
-
-
   const [activeFilter, setActiveFilter] = useState(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setAnimateProgress(true);
     }, 200);
-
     return () => clearTimeout(timer);
   }, []);
 
   //Cores Baseado na porcentagem (40%, 70%, 100%)
   const getPctColor = (pct) => {
-    if (pct === 100) return '#f5a623';
+    if (pct === 100) return '#f5c518';
     if (pct >= 70) return '#22c97a';
     if (pct >= 40) return '#4e8cff';
     return '#555';
@@ -37,7 +34,6 @@ function GamesNew() {
     if (activeFilter === 'new') return game.isNew;
     return true;
   });
-
 
   return (
     <div className='page'>
@@ -75,6 +71,9 @@ function GamesNew() {
           // Pega a cor da barra baseado na pporcentagem
           const pctColor = getPctColor(porcentagemReal);
 
+          //Se o jogo esta 100% adicionar o brilho aura
+          const isComplete = porcentagemReal === 100;
+
           return (
             <div className='game-card' key={index}>
               <div className="game-cover-inner">
@@ -109,13 +108,13 @@ function GamesNew() {
                 </div>
 
                 <div className="progress-bar-bg">
-
                   <div
-                    className="progress-bar-fill"
+                    //Cria a classe 'progress-shimmer' se o jogo for platinado (100%)
+                    className={`progress-bar-fill ${isComplete ? 'progress-shimmer' : ''}`}
                     style={{
-                      // Mostra a porcentagem Calculado, senão começa no 0%
+                      // Pega a porcentagem Calculado(se n quebrar), senão começa no 0%
                       width: animateProgress ? `${porcentagemReal}%` : '0%',
-                      background: pctColor,
+                      backgroundColor: pctColor, 
                       transition: 'width 0.8s cubic-bezier(0.4, 0, 0.2, 1)' // Tansição 'So fresh, so clean'
                     }}
                   ></div>
