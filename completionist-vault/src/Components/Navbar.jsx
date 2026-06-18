@@ -9,8 +9,8 @@ const SteamIcon = () => (
 
 
 const NAV_LINKS = [
-  { label: "HOME",         to: "/" },
-  { label: "GAMES",        to: "/Games" },
+  { label: "GAMES", to: "/Games" },
+  {label: "STATS", to: "/Profile"},
   { label: "ABOUT", to: "/About" },
 ];
 

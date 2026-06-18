@@ -23,7 +23,9 @@ function Home() {
 
       <Navbar />
       <StatsBar games={gamesData} />
-
+      <div>
+        <h1>Aqui e o home</h1>
+      </div>
       <footer>
         © 2026 DogTeam
       </footer>

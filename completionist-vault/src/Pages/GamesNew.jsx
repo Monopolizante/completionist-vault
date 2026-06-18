@@ -22,7 +22,7 @@ function GamesNew() {
   const getPctColor = (pct) => {
     if (pct === 100) return '#f5a623';
     if (pct >= 70) return '#22c97a';
-    if (pct >= 40) return '#f04040';
+    if (pct >= 40) return '#4e8cff';
     return '#555';
   };
 
