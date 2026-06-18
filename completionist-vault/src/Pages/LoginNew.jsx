@@ -93,7 +93,7 @@ function LoginNew() {
 
                         <div className="card">
                             <div className="field">
-                                <label>Nome de usuário no GameVault</label>
+                                <label>Nome de usuário Vault Account</label>
                                 <input type="text" placeholder="como quer ser chamado?" defaultValue="Luck_Css" />
                                 <p className="hint">Pode ser diferente do seu nick na Steam.</p>
                             </div>
