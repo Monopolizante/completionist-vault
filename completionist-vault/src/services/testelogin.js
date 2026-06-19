@@ -9,7 +9,7 @@ import path from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 import { Strategy as SteamStrategy } from "passport-steam";
 
@@ -124,6 +124,16 @@ app.get("/dados/user/jogos/:id", isAuthenticated, async (req, res) => {
     }
     catch (error){
         console.error(error)
+    }
+})
+
+app.get("/dados/user/info", isAuthenticated, async (req, res) => {
+    try{
+        const userId = req.query.id //o front-end manda o id do user pra cá
+        const response = await axios.get(`https://api.steampowered.com/IPlayerService/GetTopAchievementsForGames/v1/?key=${API_KEY}&steamid=${userId}&language=en&max_achievements=10000&appids[0]=550`)
+        res.json(response.data)
+    } catch (error) {
+        console.log(error)
     }
 })
 

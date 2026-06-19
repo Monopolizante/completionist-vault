@@ -1,0 +1,143 @@
+{
+    "data": {
+        "response": {
+            "games": [
+                {
+                    "appid": 550,
+                    "total_achievements": 101,
+                    "achievements": [
+                        {
+                            "statid": 0,
+                            "bit": 6,
+                            "name": "A RIDE DENIED",
+                            "desc": "Kill a Jockey within 2 seconds of it jumping on a Survivor.",
+                            "icon": "b65a6518c0680448e996e2190d1ed6b00ad14935.jpg",
+                            "icon_gray": "95bb3011848b129b4b7483017a970700a0a22bd1.jpg",
+                            "hidden": false,
+                            "player_percent_unlocked": "65.4"
+                        },
+                        {
+                            "statid": 517,
+                            "bit": 15,
+                            "name": "ELEPHANT IN THE ROOM",
+                            "desc": "Revive an incapacitated teammate while a Tank is nearby.",
+                            "icon": "6b4a0772e54be50ff072b8ff2fc55047221fadda.jpg",
+                            "icon_gray": "d41f3ecd4f056340ca776e65e820ea748df3e02f.jpg",
+                            "hidden": false,
+                            "player_percent_unlocked": "33.2"
+                        },
+                        {
+                            "statid": 0,
+                            "bit": 22,
+                            "name": "CHAIN OF COMMAND",
+                            "desc": "Kill 100 Common Infected with the chainsaw.",
+                            "icon": "840e4eca8203f2344ad8d18cd1ac52e2726affef.jpg",
+                            "icon_gray": "36f24c393d869cdeb65145cf6bbb7f55dff865c4.jpg",
+                            "hidden": false,
+                            "player_percent_unlocked": "25.7"
+                        },
+                        {
+                            "statid": 169,
+                            "bit": 21,
+                            "name": "TORCH BEARER",
+                            "desc": "Survive The Passing Campaign.",
+                            "icon": "6cea9fae601d782a48d08ed4559167f53f5f1c40.jpg",
+                            "icon_gray": "b1daa342fcd4499719c7882815c6dbf7fd1f3a2f.jpg",
+                            "hidden": false,
+                            "player_percent_unlocked": "30.1"
+                        },
+                        {
+                            "statid": 169,
+                            "bit": 29,
+                            "name": "CACHE GRAB",
+                            "desc": "Open 5 foot lockers.",
+                            "icon": "2b17304ac13f29f42a505460ee79e4619fd2be74.jpg",
+                            "icon_gray": "5ced11d4115529a48db5e2d7d58e2ef0e50b9260.jpg",
+                            "hidden": false,
+                            "player_percent_unlocked": "12.1"
+                        },
+                        {
+                            "statid": 0,
+                            "bit": 19,
+                            "name": "ARMORY OF ONE",
+                            "desc": "Deploy an ammo upgrade and have your team use it.",
+                            "icon": "4eb2b093ce1dd442da4a62c9a0659602fbfc0d1e.jpg",
+                            "icon_gray": "4fc103dcb52ccc748b5bdea66924d1bf5c9e0705.jpg",
+                            "hidden": false,
+                            "player_percent_unlocked": "51.2"
+                        },
+                        {
+                            "statid": 517,
+                            "bit": 23,
+                            "name": "GET SKEETED ON",
+                            "desc": "Kill a pouncing Hunter with a shotgun.",
+                            "icon": "1ab630f092e5f6a8ed79612156efded7bcf6080a.jpg",
+                            "icon_gray": "6161ecba6f9911a4294542b0b70ea9b257448214.jpg",
+                            "hidden": false,
+                            "player_percent_unlocked": "16.8"
+                        },
+                        {
+                            "statid": 0,
+                            "bit": 3,
+                            "name": "ACID REFLEX",
+                            "desc": "Kill a Spitter before she is able to spit.",
+                            "icon": "8d94a8ffcb20fd11de547a6972bcef319fd93bf6.jpg",
+                            "icon_gray": "19c4af0f9bb24b719a086cbd3b63961d8348bf2b.jpg",
+                            "hidden": false,
+                            "player_percent_unlocked": "66.9"
+                        },
+                        {
+                            "statid": 533,
+                            "bit": 7,
+                            "name": "GNOME ALONE",
+                            "desc": "If you are reading this achievement, Gabe Newell has successfully launched Gnome Chompski into space.",
+                            "icon": "81522571f3f42048be3e9985a05f7206f7d35e5e.jpg",
+                            "icon_gray": "4f56a3e9550c8097c51fa3e55daa4628bbb79a2d.jpg",
+                            "hidden": false,
+                            "player_percent_unlocked": "68.8"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "status": 200,
+    "statusText": "OK",
+    "headers": {
+        "content-length": "2471",
+        "content-type": "application/json; charset=utf-8"
+    },
+    "config": {
+        "transitional": {
+            "silentJSONParsing": true,
+            "forcedJSONParsing": true,
+            "clarifyTimeoutError": false,
+            "legacyInterceptorReqResOrdering": true
+        },
+        "adapter": [
+            "xhr",
+            "http",
+            "fetch"
+        ],
+        "transformRequest": [
+            null
+        ],
+        "transformResponse": [
+            null
+        ],
+        "timeout": 0,
+        "xsrfCookieName": "XSRF-TOKEN",
+        "xsrfHeaderName": "X-XSRF-TOKEN",
+        "maxContentLength": -1,
+        "maxBodyLength": -1,
+        "env": {},
+        "headers": {
+            "Accept": "application/json, text/plain, */*"
+        },
+        "withCredentials": true,
+        "method": "get",
+        "url": "http://localhost:3000/dados/user/info?id=76561198968224146",
+        "allowAbsoluteUrls": true
+    },
+    "request": {}
+}
