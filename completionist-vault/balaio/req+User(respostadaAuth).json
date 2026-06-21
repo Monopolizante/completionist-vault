@@ -1,0 +1,33 @@
+{   "comentario": "Esses são os dados que são sempre retornados quando o usuário está autenticado, independente da rota",
+    "provider": "steam",
+    "_json": {
+        "steamid": "76561199070585855",
+        "communityvisibilitystate": 3,
+        "profilestate": 1,
+        "personaname": "Monopolizante",
+        "commentpermission": 1,
+        "profileurl": "https://steamcommunity.com/profiles/76561199070585855/",
+        "avatar": "https://avatars.steamstatic.com/f36b9fad15ccbc26e7e638e6458605037b7a330f.jpg",
+        "avatarmedium": "https://avatars.steamstatic.com/f36b9fad15ccbc26e7e638e6458605037b7a330f_medium.jpg",
+        "avatarfull": "https://avatars.steamstatic.com/f36b9fad15ccbc26e7e638e6458605037b7a330f_full.jpg",
+        "avatarhash": "f36b9fad15ccbc26e7e638e6458605037b7a330f",
+        "lastlogoff": 1781572286,
+        "personastate": 1,
+        "primaryclanid": "103582791429521408",
+        "timecreated": 1593477071,
+        "personastateflags": 0
+    },
+    "id": "76561199070585855",
+    "displayName": "Monopolizante",
+    "photos": [
+        {
+            "value": "https://avatars.steamstatic.com/f36b9fad15ccbc26e7e638e6458605037b7a330f.jpg"
+        },
+        {
+            "value": "https://avatars.steamstatic.com/f36b9fad15ccbc26e7e638e6458605037b7a330f_medium.jpg"
+        },
+        {
+            "value": "https://avatars.steamstatic.com/f36b9fad15ccbc26e7e638e6458605037b7a330f_full.jpg"
+        }
+    ]
+}

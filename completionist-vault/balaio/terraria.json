@@ -1,4 +1,4 @@
-{
+{   "comentario": "Esse é o retorno do https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v1 pro jogo Terraria",
     "game": {
       "gameName": "Terraria",
       "gameVersion": "12",

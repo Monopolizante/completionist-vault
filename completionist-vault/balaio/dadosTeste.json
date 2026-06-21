@@ -1,4 +1,5 @@
-{
+
+{   "comentario" : "Esses são os dados retornados pela nova rota no testeLogin = https://api.steampowered.com/IPlayerService/GetTopAchievementsForGames/v1/, eles retornam as conquistas que o usuario tem no jogo Left For Dead",
     "data": {
         "response": {
             "games": [

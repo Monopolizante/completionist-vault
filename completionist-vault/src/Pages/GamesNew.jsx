@@ -21,13 +21,16 @@ function GamesNew() {
         try{
             const portaAPI = 3000
             const userInfo = await axios.get(`http://localhost:${portaAPI}/api/user`, {withCredentials: true})
-            const dadosUser = await axios.get(`http://localhost:${portaAPI}/dados/user/jogos/${userInfo.data.id}`, {withCredentials: true})
+            const dados = await axios.get(`http://localhost:${portaAPI}/dados/user/jogos/${userInfo.data.id}`, {withCredentials: true})
             const dadosTeste = await axios.get(`http://localhost:${portaAPI}/dados/user/info?id=${userInfo.data.id}`, {withCredentials:true})
+            console.log(dados)
             
-            const idJogosUser = dadosUser.data.response.games
-            console.log(dadosTeste)
-            console.log(idJogosUser)
-            //setUserData(idJogosUser)
+            console.log(`Dados de informação do Usuário`)
+            console.log(dados.data.infoUsuario)
+            console.log("---------------------------")
+            console.log("Array com todos os jogos do usuário")
+            console.log(dados.data.jogosUsuario)
+
             
         }catch(err){
             console.log(err)
