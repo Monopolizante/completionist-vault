@@ -26,11 +26,11 @@ app.use(cors({
 app.use(express.urlencoded({extended: true}));
 
 // 3. Configurando a Sessão (Obrigatório para o Passport funcionar)
-// Change your session setup to this:
+// Inicializa a sessão e configura o comportamento dos cookies
 app.use(session({
     secret: process.env.SESSION_SECRET || 'uma_chave_secreta_qualquer_para_testes', 
-    resave: true,                // Force session to save back to the session store
-    saveUninitialized: true,     // Force an uninitialized session to be saved
+    resave: false,                
+    saveUninitialized: false,     
     cookie: {
         maxAge: 24 * 60 * 60 * 1000, // Cookie lasts 1 day
         secure: false,               // MUST be false for http://localhost (no HTTPS)
@@ -60,19 +60,15 @@ passport.use(new SteamStrategy({
   },
   function(identifier, profile, done) {
     // O login deu certo! O profile tem os dados do jogador
+    console.log(`retorno da conversa com a steam com o passport ${profile.displayName}`)
     return done(null, profile);
+    
   }
 ));
 
 
 
 // 6. Serialização (Salva o usuário na sessão)
-passport.serializeUser((user, done) => {
-    done(null, user);
-});
-passport.deserializeUser((obj, done) => {
-    done(null, obj);
-});
 
 
 // ==========================================
@@ -137,6 +133,12 @@ app.get("/dados/user/info", isAuthenticated, async (req, res) => {
     }
 })
 
+passport.serializeUser((user, cb) => {
+    cb(null, user);
+});
+passport.deserializeUser((user, cb) => {
+    cb(null, user);
+});
 
 app.listen(port, () =>{
     console.log(`Server running on port ${port}`);
