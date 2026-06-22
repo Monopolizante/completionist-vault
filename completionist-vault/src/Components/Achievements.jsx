@@ -1,6 +1,6 @@
 import { useState } from "react";
-import "./Achievements.css";
-import "../Pages/pages.css"
+import "../Styles/Achievements.css";
+import "../Styles/pages.css";
 import Navbar from "./Navbar";
 
 const GAME_DATA = {
@@ -26,7 +26,7 @@ const GAME_DATA = {
       desc: "Conclua a história principal pelo menos no modo Padrão(Clássico).", 
       iconUrl: "src/Images/Achievements/AgenteCasca.png", 
       rarity: "rare",
-      unlocked: true, 
+      unlocked: false, 
       date: "21 jun 2026" 
     },
     { 

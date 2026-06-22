@@ -1,5 +1,5 @@
 import { NavLink, Link, useNavigate } from "react-router-dom";
-import "./CompStyle.css"
+import "../Styles/CompStyle.css";
 
 const SteamIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style={{ width: "20px", height: "20px" }}>

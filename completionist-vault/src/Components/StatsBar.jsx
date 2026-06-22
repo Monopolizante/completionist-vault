@@ -1,5 +1,5 @@
-import "./CompStyle.css"
-import gamesData from '../Pages/gamesData';
+import "../Styles/CompStyle.css";
+import gamesData from '../Scripts/gamesData';
 
 // Puxar lista dos jogos(gamesData) 
 function StatsBar({ games }) {

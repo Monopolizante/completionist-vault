@@ -1,6 +1,6 @@
 
-import Navbar from '../Components/Navbar'
-import "./pages.css";
+import Navbar from '../Components/Navbar';
+import "../Styles/pages.css";
 
 function Stats() {
     return (

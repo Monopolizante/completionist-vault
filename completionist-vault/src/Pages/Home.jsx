@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
-import axios from 'axios'
-import "./pages.css"
-import Navbar from '../Components/Navbar'
-import StatsBar from '../Components/StatsBar'
-import gamesData from './gamesData'
+import React, { useState } from 'react';
+import axios from 'axios';
+import "../Styles/pages.css";
+import Navbar from '../Components/Navbar';
+import StatsBar from '../Components/StatsBar';
+import gamesData from '../Scripts/gamesData';
 
 
 function Home() {

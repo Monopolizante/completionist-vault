@@ -4,8 +4,8 @@ import { IconAugmentedReality } from '@tabler/icons-react'; //Icon vault / <Icon
 import { IconCircleDashedCheck } from '@tabler/icons-react'; //Icon Check / <IconCircleDashedCheck stroke={1.5} />
 import { IconBrandSteam } from '@tabler/icons-react'; //Icon Steam / <IconBrandSteam stroke={2} />
 import { IconLogin } from '@tabler/icons-react'; //Icon Login / <IconLogin stroke={2} />
-import "./pages.css";
-import "./Login.css";
+import "../Styles/pages.css";
+import "../Styles/Login.css";
 
 function LoginNew() {
     const [activeScreen, setActiveScreen] = useState("login");

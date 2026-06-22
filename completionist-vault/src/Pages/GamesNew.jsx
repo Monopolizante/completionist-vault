@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'
+import axios from 'axios';
 import Navbar from '../Components/Navbar';
-import "./pages.css";
-import "./Animation.css"
-import "./Cards.css"
-import gamesData from './gamesData';
+import "../Styles/pages.css";
+import "../Styles/Animation.css";
+import "../Styles/Cards.css";
+import gamesData from '../Scripts/gamesData';
 import StatsBar from '../Components/StatsBar';
 function GamesNew() {
   const [animateProgress, setAnimateProgress] = useState(false);

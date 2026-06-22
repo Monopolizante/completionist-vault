@@ -1,6 +1,6 @@
-import React from 'react'
-import Navbar from '../Components/Navbar'
-import "./pages.css";
+import React from 'react';
+import Navbar from '../Components/Navbar';
+import "../Styles/pages.css";
 
 function GamesLogout() {
   return (

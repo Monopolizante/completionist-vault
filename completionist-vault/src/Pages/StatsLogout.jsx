@@ -1,5 +1,5 @@
 import Navbar from "../Components/Navbar";
-import "./pages.css";
+import "../Style/pages.css";
 
 function StatsLogout() {
   return (
