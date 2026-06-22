@@ -4,14 +4,19 @@
 @import url("https://api.fontshare.com/v2/css?f[]=teko@300,400,500,600,700&display=swap");
 
 :root {
-
     /* Fontes */
     --satoshi: 'Satoshi', sans-serif;
     --tanker: 'Tanker', sans-serif;
     --poppins: 'Poppins', sans-serif;
     --teko: 'Teko', sans-serif;
-        /* - Azul - */
 
+    /* - Cores das Raridades - */
+    --rarity-common: #9aabcc;
+    --rarity-rare: #60a5fa;
+    --rarity-epic: #c084fc;
+    --rarity-legendary: #fbbf24;
+
+    /* - Azul - */
     --blue-700: #1a4eb8;
     --blue-600: #2d6be0;
     --blue-500: #4e8cff;
@@ -19,46 +24,37 @@
     --blue-50: #0e1e3a;
 
     /* - Roxo - */
-
     --purple-700: #5a3db8;
     --purple-600: #7c5ce0;
     --purple-500: #a78bfa;
     --purple-200: #2d2060;
-    --purple-500: #1a1430;
+    --purple-100: #1a1430;
+
 
     /* - Gradiente - */
-
     --gradient-accent: linear-gradient(90deg, #4e8cff, #a78bfa);
 
     /* - textos - */
-
     --text-primary: #e8eaf0;
     --text-secondary: #c8cde0;
     --text-muted: #9aabcc;
     --text-disabled: #4a5068;
 
     /* - Backgrounds - */
-
     --bg-page: #0d0f14;
     --bg-surface: #111318;
-    /* Surface usar mais para os cards ossss*/
     --bg-elevated: #161a24;
     --bg-overlay: #1b2030;
 
     /* - Bordas - */
-    /*Default -_-*/
     --border-default: #2a3148;
-    /*Divisores*/
     --border-subtle: #1e2330;
-    /*Foco*/
     --border-strong: #3d4f7a;
 
     /* - Conquistas ?? - */
-
     --color-success: #f5a623;
     --color-progress: #22c97a;
     --color-danger: #f04040;
-
 }
 
 * {

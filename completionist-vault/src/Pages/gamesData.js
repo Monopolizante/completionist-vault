@@ -10,6 +10,7 @@
     { name: "Bloodstained: Ritual of the night", image:"src/Images/Blood.jpg", pct: 33, unlocked: 45, total: 57, hours: "6.2h", platform: "PC", recent: true, isNew: false },
     { name: "Ratchet & Clank: Rift Apart", image:"src/Images/Ratchet.jpg", pct: 33, unlocked: 47, total: 47, hours: "18h", platform: "PC", recent: true, isNew: false },
     
+    
 
   ];
 

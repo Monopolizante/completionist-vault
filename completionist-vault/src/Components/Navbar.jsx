@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { label: "GAMES", to: "/Games" },
   { label: "STATS", to: "/Stats" },
   { label: "ABOUT", to: "/About" },
+  { label: "ACHIEVE", to: "/Achievements"}
 ];
 
 

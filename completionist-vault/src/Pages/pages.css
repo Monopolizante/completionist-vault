@@ -1,8 +1,10 @@
 /* ----- Paginas -----*/
 .page {
+    padding-top: 0 !important;
     background: var(--bg-page);
     min-height: calc(100vh - 56px);
     padding: 2rem;
+    overflow-x: hidden;
 }
 
 .page-header {
