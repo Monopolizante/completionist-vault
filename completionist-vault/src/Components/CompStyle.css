@@ -8,11 +8,11 @@
   border-bottom: 1px solid var(--border-subtle);
   position: relative;
   font-family: var(--poppins);
-  border-radius: 14px;
+  
   box-shadow: 0 2px 24px rgba(0, 0, 0, 0.5);
 }
 
-/*Efeito gradiente em cima da barra (Se for usar não deixar barra redonda osss)
+/*Efeito gradiente em cima da barra (Se for usar não deixar barra redonda osss)*/
   .navbar::before {
   content: '';
   position: absolute;
@@ -22,7 +22,7 @@
   height: 2px;
   background: var(--gradient-accent);
           
-} */
+} 
 
 .brand {
   font-family: var(--poppins);

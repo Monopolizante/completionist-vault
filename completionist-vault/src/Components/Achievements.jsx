@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./Achievements.css";
+import "../Pages/pages.css"
 import Navbar from "./Navbar";
 
 const GAME_DATA = {
@@ -52,7 +53,7 @@ const GAME_DATA = {
       desc: "Derrote pelo menos três inimigos com um único tiro de Requiem.", 
       iconUrl: "src/Images/Achievements/CustoBeneficio.png", 
       rarity: "epic", 
-      unlocked: false, 
+      unlocked: true, 
       date: null 
     },
     { 
@@ -61,7 +62,7 @@ const GAME_DATA = {
       desc: "Conclua a história principal libertando Elpis em até quatro horas.", 
       iconUrl: "src/Images/Achievements/DemonioDaVelocidade.png", 
       rarity: "legendary",
-      unlocked: false, 
+      unlocked: true, 
       date: null 
     }
   ]

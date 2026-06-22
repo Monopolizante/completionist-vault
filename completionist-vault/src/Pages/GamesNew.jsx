@@ -3,6 +3,7 @@ import axios from 'axios'
 import Navbar from '../Components/Navbar';
 import "./pages.css";
 import "./Animation.css"
+import "./Cards.css"
 import gamesData from './gamesData';
 import StatsBar from '../Components/StatsBar';
 function GamesNew() {
