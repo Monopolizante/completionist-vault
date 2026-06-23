@@ -89,8 +89,8 @@ app.get(
   "/auth/steam/return",
   passport.authenticate("steam", { failureRedirect: URL_REACT }),
   (req, res) => {
-    // Deu certo! Manda de volta pro React
-    res.redirect(URL_REACT);
+    // Deu certo! Manda de volta pro React (Agora manda para o /Games. Luca esteve Aqui)
+    res.redirect(`${URL_REACT}/Games`);
   },
 );
 
@@ -107,8 +107,7 @@ app.get("/api/user", (req, res) => {
 // SUAS ROTAS ORIGINAIS
 // ==========================================
 
-/* 
-app.get("/dados/jogos", async (req, res) => {
+/* app.get("/dados/jogos", async (req, res) => {
   try {
     const response = await axios.get(
       `https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=${API_KEY}&appid=${jogo}`,
@@ -130,13 +129,57 @@ app.get("/dados/user/jogos/:id", isAuthenticated, async (req, res) => {
     const steamResponse = await axios.get(
       `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${API_KEY}&steamid=${id}&format=json&include_appinfo=true&include_played_free_games=true`,
     );
+
+    // Pega a lista original de jogos retornada pela Steam
+    const listaJogos = steamResponse.data.response?.games || [];
+
+    // Mapeia os jogos buscando as conquistas de forma paralela e segura
+    const jogosComConquistas = await Promise.all(
+      listaJogos.map(async (jogo) => {
+        // Se o usuário nunca jogou o título, não gasta requisição com a API
+        if (jogo.playtime_forever === 0) {
+          return { ...jogo, has_achievements: false, unlocked: 0, total: 0, pct: 0 };
+        }
+
+        try {
+          // Busca o status atualizado de conquistas do usuário para este AppID
+          const playerAchievementsUrl = `https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/?appid=${jogo.appid}&key=${API_KEY}&steamid=${id}`;
+          const playerRes = await axios.get(playerAchievementsUrl);
+          const achievements = playerRes.data.playerstats.achievements || [];
+
+          if (achievements.length > 0) {
+            const unlocked = achievements.filter(a => a.achieved === 1).length;
+            const total = achievements.length;
+            const pct = Math.round((unlocked / total) * 100);
+
+            return {
+              ...jogo,
+              has_achievements: true,
+              unlocked: unlocked,
+              total: total,
+              pct: pct
+            };
+          }
+        } catch (err) {
+          // Ignora erros caso o jogo não possua suporte oficial a conquistas na API
+        }
+
+        return { ...jogo, has_achievements: false, unlocked: 0, total: 0, pct: 0 };
+      })
+    );
+
     res.setHeader("Content-Type", "application/json");
     res.json({
       infoUsuario: userData._json,
-      jogosUsuario: steamResponse.data,
+      jogosUsuario: {
+        response: {
+          games: jogosComConquistas
+        }
+      },
     });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ error: "Erro interno ao processar a biblioteca com conquistas." });
   }
 });
 
@@ -151,6 +194,66 @@ app.get("/dados/user/info", isAuthenticated, async (req, res) => {
     res.json(response.data);
   } catch (error) {
     console.log(error);
+  }
+});
+
+// =========================================================================
+// NOVA ROTA: OBTENÇÃO DINÂMICA DE CONQUISTAS DO JOGO POR USUÁRIO
+// =========================================================================
+app.get("/dados/user/jogos/:id/conquistas/:appId", isAuthenticated, async (req, res) => {
+  try {
+    const { id, appId } = req.params;
+
+    // 1. Busca quais conquistas o jogador específico desbloqueou e a data
+    const playerAchievementsUrl = `https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/?appid=${appId}&key=${API_KEY}&steamid=${id}&l=brazilian`;
+    const playerRes = await axios.get(playerAchievementsUrl);
+    const playerStats = playerRes.data.playerstats;
+
+    // 2. Busca o Schema do Jogo para pegar títulos amigáveis, descrições e ícones das conquistas
+    const gameSchemaUrl = `https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=${API_KEY}&appid=${appId}&l=brazilian`;
+    const schemaRes = await axios.get(gameSchemaUrl);
+    const gameSchema = schemaRes.data.game.availableGameStats?.achievements || [];
+
+    // Mapeia e cruza as conquistas do jogador com os detalhes globais do Schema
+    const achievementsFormatted = gameSchema.map((sch, index) => {
+      const playerAch = playerStats.achievements?.find(a => a.apiname === sch.name);
+      
+      // Formata a data se estiver desbloqueada
+      let formattedDate = null;
+      if (playerAch?.unlocktime) {
+        const dateObj = new Date(playerAch.unlocktime * 1000);
+        formattedDate = dateObj.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+      }
+
+      // Determinação simples de raridade com base nas regras existentes no frontend
+      let rarity = "common";
+      if (index % 4 === 0) rarity = "legendary";
+      else if (index % 3 === 0) rarity = "epic";
+      else if (index % 2 === 0) rarity = "rare";
+
+      return {
+        id: index + 1,
+        name: sch.displayName || sch.name,
+        desc: sch.description || "Conquista Secreta",
+        iconUrl: sch.icon,
+        rarity: rarity,
+        unlocked: playerAch ? playerAch.achieved === 1 : false,
+        date: formattedDate
+      };
+    });
+
+    res.json({
+      name: playerStats.gameName,
+      imageIcon: `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${appId}/header.jpg`,
+      heroBg: "linear-gradient(160deg, #0a1118, #1c242e)",
+      accentColor: "#f5c518",
+      platform: "Steam",
+      achievements: achievementsFormatted
+    });
+
+  } catch (error) {
+    console.error("Erro ao buscar conquistas na API da Steam:", error.message);
+    res.status(500).json({ error: "Erro ao obter conquistas da Steam" });
   }
 });
 

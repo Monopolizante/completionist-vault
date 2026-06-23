@@ -1,4 +1,14 @@
+import React, { useState, useEffect, useRef } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+
+// Importando os ícones necessários do Tabler Icons
+import { 
+  IconChevronDown, 
+  IconLink, 
+  IconLogout 
+} from '@tabler/icons-react';
+
 import "../Styles/CompStyle.css";
 
 const SteamIcon = () => (
@@ -7,37 +17,70 @@ const SteamIcon = () => (
   </svg>
 );
 
-
 const NAV_LINKS = [
   { label: "GAMES", to: "/Games" },
   { label: "STATS", to: "/Stats" },
   { label: "ABOUT", to: "/About" },
-  { label: "ACHIEVE", to: "/Achievements"}
 ];
-
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null); //Checar login do usuario
+  const [dropdownOpen, setDropdownOpen] = useState(false); //Menu DropDown...pega no meu ***
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/api/user", { withCredentials: true });
+        if (response.data) {
+          setUser(response.data);
+        }
+      } catch (err) {
+        setUser(null);
+      }
+    };
+    checkUser();
+  }, []);
+
+  // Desativa o Dropdown se clicar fora (As vezes funciona)
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handleSteamClick = () => {
-    navigate("/Login") //Vai levar para a pagina LoginNew... eu acho
-  }
+    navigate("/Login");
+  };
+
+  const toggleDropdown = () => {
+    setDropdownOpen(prev => !prev);
+  };
+
+  // Adicionar rota Logout(Robzon) aqui!
+  const handleLogout = () => {
+    setUser(null);
+    setDropdownOpen(false);
+    navigate("/");
+  };
 
   return (
     <>
       <nav className="navbar" role="navigation" aria-label="Main navigation">
-
-        {/* Brand — Link vai para "/" */}
         <Link to="/" className="brand" aria-label="Completionist Vault home">
           COMPLETIONIST<span>-VAULT</span>
         </Link>
 
-        {/* Links do NavLink vou ficar louco */}
         <div className="nav-links" role="menubar">
           {NAV_LINKS.map(({ label, to }) => (
             <NavLink
               key={to}
               to={to}
-
               end={to === "/"}
               role="menuitem"
               className={({ isActive }) =>
@@ -49,18 +92,50 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Steam login */}
         <div className="steam-actions">
-          <button
-            className="steam-btn"
-            aria-label="Sign in with Steam"
-            onClick={handleSteamClick}
-          >
-            <SteamIcon />
-            <span>Sign in with Steam</span>
-          </button>
-        </div>
+          {user ? (
+            <div className="user-menu-container" ref={dropdownRef}>
+              <button
+                className="user-profile-nav"
+                onClick={toggleDropdown}
+                aria-expanded={dropdownOpen}
+                aria-haspopup="true"
+              >
+                <span className="user-name">{user.displayName}</span>
+                <img
+                  src={user.photos?.[0]?.value || "https://avatars.akamai.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg"}
+                  alt="User Avatar"
+                  className="user-avatar-nav"
+                />
+                <IconChevronDown 
+                  size={12} 
+                  className={`dropdown-arrow ${dropdownOpen ? 'open' : ''}`} 
+                />
+              </button>
 
+              {dropdownOpen && (
+                <div className="user-dropdown-menu">
+                  <button className="dropdown-item" onClick={() => { setDropdownOpen(false); navigate("/vault-account"); }}>
+                    <IconLink size={16} /> Conectar Vault-Account
+                  </button>
+                  <div className="dropdown-divider"></div>
+                  <button className="dropdown-item logout" onClick={handleLogout}>
+                    <IconLogout size={16} /> Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button
+              className="steam-btn"
+              aria-label="Sign in with Steam"
+              onClick={handleSteamClick}
+            >
+              <SteamIcon />
+              <span>Sign in with Steam</span>
+            </button>
+          )}
+        </div>
       </nav>
     </>
   );

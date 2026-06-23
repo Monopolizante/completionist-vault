@@ -22,7 +22,6 @@ function Home() {
     <div className="page">
 
       <Navbar />
-      <StatsBar games={gamesData} />
       <div>
         <h1>Aqui e o home</h1>
       </div>
@@ -34,8 +33,3 @@ function Home() {
 }
 
 export default Home
-
-{/*             <h3>Bem vindo ao</h3>
-            <h1>The Completionist Vault</h1>
-            <button onClick={pegarDados}>Clique</button>
-            {jogo} */}

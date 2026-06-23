@@ -17,7 +17,6 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
-    "nodemon": "^3.1.14",
     "passport": "^0.7.0",
     "passport-steam": "^1.0.18",
     "react": "^19.2.4",
@@ -33,6 +32,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
+    "nodemon": "^3.1.14",
     "vite": "^8.0.0"
   }
 }

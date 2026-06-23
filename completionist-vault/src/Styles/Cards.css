@@ -300,3 +300,81 @@ position: absolute;
     flex-direction: column;
     gap: 4px;
 }
+
+.controls-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 1rem;
+}
+
+.controls-container .filter-container {
+    margin-top: 0; /* Reseta margem antiga para alinhar perfeitamente */
+}
+
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    max-width: 300px;
+    width: 100%;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    color: var(--text-muted);
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.search-input {
+    width: 100%;
+    padding: 8px 12px 8px 36px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: var(--poppins);
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--blue-500);
+    box-shadow: 0 0 0 2px rgba(78, 140, 255, 0.15);
+}
+
+/*Ajuste anti-borrão nos Cards de Jogo */
+.game-cover-bg {
+    image-rendering: -webkit-optimize-contrast; /* Melhora nitidez no Chrome/Safari */
+    image-rendering: crisp-edges;
+    background-repeat: no-repeat;
+}
+/* Estilo adaptado do inline para o texto de sincronização */
+.sync-loading-text {
+    color: #fff;
+    padding: 20px;
+    font-family: var(--poppins);
+}
+
+/* Tamanho corrigido para o SVG do botão Steam no overlay */
+.steam-btn-svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Alinhamento opcional para o ícone de troféu e de busca */
+.achievements-label svg {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+.lock-open-icon {
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
