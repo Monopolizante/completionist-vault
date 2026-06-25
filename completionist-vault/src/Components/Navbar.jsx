@@ -21,6 +21,7 @@ const NAV_LINKS = [
   { label: "GAMES", to: "/Games" },
   { label: "STATS", to: "/Stats" },
   { label: "ABOUT", to: "/About" },
+
 ];
 
 export default function Navbar() {
@@ -115,7 +116,7 @@ export default function Navbar() {
 
               {dropdownOpen && (
                 <div className="user-dropdown-menu">
-                  <button className="dropdown-item" onClick={() => { setDropdownOpen(false); navigate("/vault-account"); }}>
+                  <button className="dropdown-item" onClick={() => { setDropdownOpen(false); navigate("/loginVault"); }}>
                     <IconLink size={16} /> Conectar Vault-Account
                   </button>
                   <div className="dropdown-divider"></div>
