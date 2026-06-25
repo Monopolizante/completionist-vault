@@ -19,6 +19,7 @@
     "express-session": "^1.19.0",
     "passport": "^0.7.0",
     "passport-steam": "^1.0.18",
+    "pg": "^8.22.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.14.2"

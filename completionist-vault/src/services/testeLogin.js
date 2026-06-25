@@ -6,6 +6,7 @@ import passport from "passport";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import path from "path";
+import pg from "pg"
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -57,6 +58,14 @@ app.use(passport.session());
 
 const API_KEY = process.env.API_KEY;
 
+const db = new pg.Client({
+  user:"postgres",
+  database: "completionist-vault",
+  password:process.env.DATABASE_PASSWORD,
+  port: 5432
+})
+
+db.connect()
 // 5. Configurando a Estratégia da Steam
 passport.use(
   new SteamStrategy(
@@ -106,22 +115,6 @@ app.get("/api/user", (req, res) => {
 // ==========================================
 // SUAS ROTAS ORIGINAIS
 // ==========================================
-
-/* app.get("/dados/jogos", async (req, res) => {
-  try {
-    const response = await axios.get(
-      `https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=${API_KEY}&appid=${jogo}`,
-    );
-    res.json(response.data);
-  } catch (error) {
-    console.error(error); // Adicionado para ajudar a debugar se der erro
-    res.status(500).json({ error: "Erro pegando os dados da steam" });
-  }
-}); 
-
-TOTAL DE CONQUISTAS POR JOGO, ATÉ AGORA A ROTA NÃO É UTILIZADA
-*/
-
 app.get("/dados/user/jogos/:id", isAuthenticated, async (req, res) => {
   try {
     const id = req.params.id;
@@ -182,21 +175,6 @@ app.get("/dados/user/jogos/:id", isAuthenticated, async (req, res) => {
     res.status(500).json({ error: "Erro interno ao processar a biblioteca com conquistas." });
   }
 });
-
-
-// ROTA TESTE 
-app.get("/dados/user/info", isAuthenticated, async (req, res) => {
-  try {
-    const userId = req.query.id; //o front-end manda o id do user pra cá
-    const response = await axios.get(
-      `https://api.steampowered.com/IPlayerService/GetTopAchievementsForGames/v1/?key=${API_KEY}&steamid=${userId}&language=en&max_achievements=10000&appids[0]=550`,
-    );
-    res.json(response.data);
-  } catch (error) {
-    console.log(error);
-  }
-});
-
 // =========================================================================
 // NOVA ROTA: OBTENÇÃO DINÂMICA DE CONQUISTAS DO JOGO POR USUÁRIO
 // =========================================================================
