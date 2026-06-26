@@ -18,7 +18,8 @@ import { Strategy as SteamStrategy } from "passport-steam";
 const port = 3000; // Porta do Backend
 const URL_REACT = "http://localhost:5173"; // MUDE ISSO para a porta que o seu React estiver rodando
 const app = express();
-const saltRounds = 10
+const saltRounds = 10;
+let hasVaultAccount= false
 
 // 2. Ajuste CRÍTICO no CORS para permitir o envio de cookies de sessão
 app.use(
@@ -53,6 +54,8 @@ const isAuthenticated = (req, res, next) => {
   // User is not logged in, send an unauthorized error
   res.status(401).json({ error: "Unauthorized: Please log in first." });
 };
+
+
 
 // 4. Inicializando o Passport
 app.use(passport.initialize());
@@ -153,7 +156,8 @@ app.get("/dados/user/jogos/:id", isAuthenticated, async (req, res) => {
               has_achievements: true,
               unlocked: unlocked,
               total: total,
-              pct: pct
+              pct: pct,
+              vaultAccount: hasVaultAccount
             };
           }
         } catch (err) {
@@ -163,14 +167,15 @@ app.get("/dados/user/jogos/:id", isAuthenticated, async (req, res) => {
         return { ...jogo, has_achievements: false, unlocked: 0, total: 0, pct: 0 };
       })
     );
-
+    console.log(hasVaultAccount)
     res.setHeader("Content-Type", "application/json");
     res.json({
       infoUsuario: userData._json,
       jogosUsuario: {
         response: {
           games: jogosComConquistas
-        }
+        },
+      vaultAccount: hasVaultAccount
       },
     });
   } catch (error) {
@@ -229,7 +234,8 @@ app.get("/dados/user/jogos/:id/conquistas/:appId", isAuthenticated, async (req, 
       heroBg: "linear-gradient(160deg, #0a1118, #1c242e)",
       accentColor: "#f5c518",
       platform: "Steam",
-      achievements: achievementsFormatted
+      achievements: achievementsFormatted,
+      vaultAccount: hasVaultAccount
     });
 
   } catch (error) {
@@ -238,18 +244,28 @@ app.get("/dados/user/jogos/:id/conquistas/:appId", isAuthenticated, async (req, 
   }
 });
 
-app.post("/cadastro", (req, res) => {
-  console.log(req.user)
+app.post("/cadastro", isAuthenticated, (req, res) => {
+  const userId = req.user._json.steamid
   const email = req.body.email 
   const senhaCrua = req.body.senha
   try {
-    bcrypt.hash(senhaCrua, saltRounds, (err, hashedPassword) => {
-      db.query("INSERT INTO vault-accounts")
+    bcrypt.hash(senhaCrua, saltRounds, (err, senhaCriptografada) => 
+    {
+      db.query("INSERT INTO vault_accounts VALUES($1, $2, $3)", [userId, email, senhaCriptografada], (err) => {
+       if (err){
+         console.log(`Erro durante a inserção de dados: ${err}`)
+       } else{
+        hasVaultAccount = true
+        res.redirect(`${URL_REACT}/Games`);
+       }
+      })
+
     })
   } catch (error) {
-    
+    console.log(`Erro interno no servidor: ${error}`)
   }
 })
+
 
 
 passport.serializeUser((user, cb) => {
