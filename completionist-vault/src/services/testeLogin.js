@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import path from "path";
 import pg from "pg"
+import bcrypt from "bcrypt"
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,6 +18,7 @@ import { Strategy as SteamStrategy } from "passport-steam";
 const port = 3000; // Porta do Backend
 const URL_REACT = "http://localhost:5173"; // MUDE ISSO para a porta que o seu React estiver rodando
 const app = express();
+const saltRounds = 10
 
 // 2. Ajuste CRÍTICO no CORS para permitir o envio de cookies de sessão
 app.use(
@@ -60,12 +62,13 @@ const API_KEY = process.env.API_KEY;
 
 const db = new pg.Client({
   user:"postgres",
-  database: "completionist-vault",
+  database: "completionistVault",
   password:process.env.DATABASE_PASSWORD,
   port: 5432
 })
 
-db.connect()
+db.connect() 
+
 // 5. Configurando a Estratégia da Steam
 passport.use(
   new SteamStrategy(
@@ -234,6 +237,20 @@ app.get("/dados/user/jogos/:id/conquistas/:appId", isAuthenticated, async (req, 
     res.status(500).json({ error: "Erro ao obter conquistas da Steam" });
   }
 });
+
+app.post("/cadastro", (req, res) => {
+  console.log(req.user)
+  const email = req.body.email 
+  const senhaCrua = req.body.senha
+  try {
+    bcrypt.hash(senhaCrua, saltRounds, (err, hashedPassword) => {
+      db.query("INSERT INTO vault-accounts")
+    })
+  } catch (error) {
+    
+  }
+})
+
 
 passport.serializeUser((user, cb) => {
   cb(null, user);

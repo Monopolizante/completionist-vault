@@ -19,9 +19,9 @@ function LoginVault() {
         const checkUser = async () => {
             try {
                 const response = await axios.get("http://localhost:3000/api/user", { withCredentials: true });
-                if (response.data) {
-                    setUser(response.data);
-                }
+                console.log(response.data)
+                setUser(response.data);
+                
             } catch (err) {
                 setUser(null);
             }
@@ -32,8 +32,8 @@ function LoginVault() {
     return (
         <div className='page'>
             <Navbar />
-            <form action="/cadastro" method='post'>
-                <div id="screen-complete" className="screen active">
+            <form action="http://localhost:3000/cadastro" method='POST'>
+                <div className="screen active">
                     <div className="box">
                         <div className="logo">
                             <div className="logo-icon">
@@ -75,17 +75,13 @@ function LoginVault() {
                                     <input type="password" placeholder="••••••••" />
                                 </div>
                             </div>
-                            <button className="btn-primary" style={{ marginTop: "16px" }}>
+                            <button className="btn-primary"  style={{ marginTop: "16px" }}>
                                 <IconAugmentedReality stroke={1.5} />
                                 Criar minha conta
                             </button>
                         </div>
                     </div>
                 </div>
-
-
-
-
             </form>
         </div>
     )
