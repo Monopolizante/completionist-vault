@@ -40,7 +40,7 @@ function GamesNew() {
         // Tenta buscar dados do usuário autenticado
         const userInfo = await axios.get(`http://localhost:${portaAPI}/api/user`, { withCredentials: true });
         const dados = await axios.get(`http://localhost:${portaAPI}/dados/user/jogos/${userInfo.data.id}`, { withCredentials: true });
-
+        console.log(dados)
         if (dados.data.jogosUsuario?.response?.games) {
           setGames(dados.data.jogosUsuario.response.games);
           setIsLoggedIn(true);
@@ -133,7 +133,6 @@ function GamesNew() {
         {/* Todo o resto da interface recebe desfoque caso esteja deslogado */}
         <div className={!isLoggedIn ? "blur-content" : ""}>
 
-          <StatsBar games={games} />
 
           <div className='page-header'>
             <h1 className='page-title'>My Library</h1>

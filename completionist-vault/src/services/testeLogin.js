@@ -19,7 +19,9 @@ const port = 3000; // Porta do Backend
 const URL_REACT = "http://localhost:5173"; // MUDE ISSO para a porta que o seu React estiver rodando
 const app = express();
 const saltRounds = 10;
+const portaAPI=3000
 let hasVaultAccount= false
+
 
 // 2. Ajuste CRÍTICO no CORS para permitir o envio de cookies de sessão
 app.use(
@@ -125,49 +127,10 @@ app.get("/dados/user/jogos/:id", isAuthenticated, async (req, res) => {
   try {
     const id = req.params.id;
     const userData = req.user;
-    const steamResponse = await axios.get(
-      `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${API_KEY}&steamid=${id}&format=json&include_appinfo=true&include_played_free_games=true`,
-    );
-
-    // Pega a lista original de jogos retornada pela Steam
-    const listaJogos = steamResponse.data.response?.games || [];
-
-    // Mapeia os jogos buscando as conquistas de forma paralela e segura
-    const jogosComConquistas = await Promise.all(
-      listaJogos.map(async (jogo) => {
-        // Se o usuário nunca jogou o título, não gasta requisição com a API
-        if (jogo.playtime_forever === 0) {
-          return { ...jogo, has_achievements: false, unlocked: 0, total: 0, pct: 0 };
-        }
-
-        try {
-          // Busca o status atualizado de conquistas do usuário para este AppID
-          const playerAchievementsUrl = `https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/?appid=${jogo.appid}&key=${API_KEY}&steamid=${id}`;
-          const playerRes = await axios.get(playerAchievementsUrl);
-          const achievements = playerRes.data.playerstats.achievements || [];
-
-          if (achievements.length > 0) {
-            const unlocked = achievements.filter(a => a.achieved === 1).length;
-            const total = achievements.length;
-            const pct = Math.round((unlocked / total) * 100);
-
-            return {
-              ...jogo,
-              has_achievements: true,
-              unlocked: unlocked,
-              total: total,
-              pct: pct,
-              vaultAccount: hasVaultAccount
-            };
-          }
-        } catch (err) {
-          // Ignora erros caso o jogo não possua suporte oficial a conquistas na API
-        }
-
-        return { ...jogo, has_achievements: false, unlocked: 0, total: 0, pct: 0 };
-      })
-    );
-    console.log(hasVaultAccount)
+    const jogosComConquistas = await teste(id)
+    // Mapeia os jogos buscando as conquistas de forma paralela e segura;
+    
+    console.log(`Tem a vaultAccount?${hasVaultAccount}`)
     res.setHeader("Content-Type", "application/json");
     res.json({
       infoUsuario: userData._json,
@@ -244,11 +207,14 @@ app.get("/dados/user/jogos/:id/conquistas/:appId", isAuthenticated, async (req, 
   }
 });
 
+
 app.post("/cadastro", isAuthenticated, async (req, res) => {
   const ownedGames = await axios.get(
     `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${API_KEY}&steamid=${req.user._json.steamid}&format=json&include_appinfo=true&include_played_free_games=true`,
   );
   
+  
+
   const gameCount = ownedGames.data.response.gameCount
   const email = req.body.email 
   const senhaCrua = req.body.senha
@@ -295,5 +261,49 @@ app.listen(port, () => {
   console.log(`Server running on port ${port}`);
   console.log(`Did the API KEY load?`, process.env.API_KEY ? "yes" : "no");
 });
+
+async function teste(id) {
+  const steamResponse = await axios.get(
+      `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${API_KEY}&steamid=${id}&format=json&include_appinfo=true&include_played_free_games=true`,
+    );
+  
+    // Pega a lista original de jogos retornada pela Steam
+    const listaJogos = steamResponse.data.response?.games || [];
+    const jogosComConquistas = await Promise.all(
+      listaJogos.map(async (jogo) => {
+        // Se o usuário nunca jogou o título, não gasta requisição com a API
+        if (jogo.playtime_forever === 0) {
+          return { ...jogo, has_achievements: false, unlocked: 0, total: 0, pct: 0 };
+        }
+
+        try {
+          // Busca o status atualizado de conquistas do usuário para este AppID
+          const playerAchievementsUrl = `https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/?appid=${jogo.appid}&key=${API_KEY}&steamid=${id}`;
+          const playerRes = await axios.get(playerAchievementsUrl);
+          const achievements = playerRes.data.playerstats.achievements || [];
+
+          if (achievements.length > 0) {
+            const unlocked = achievements.filter(a => a.achieved === 1).length;
+            const total = achievements.length;
+            const pct = Math.round((unlocked / total) * 100);
+
+            return {
+              ...jogo,
+              has_achievements: true,
+              unlocked: unlocked,
+              total: total,
+              pct: pct,
+              vaultAccount: hasVaultAccount
+            };
+          }
+        } catch (err) {
+          // Ignora erros caso o jogo não possua suporte oficial a conquistas na API
+        }
+        
+        return { ...jogo, has_achievements: false, unlocked: 0, total: 0, pct: 0 };
+      }))
+      return jogosComConquistas
+}
+
 
 // Middleware to protect API routes
