@@ -267,7 +267,6 @@ app.post("/cadastro", isAuthenticated, (req, res) => {
 })
 
 
-
 passport.serializeUser((user, cb) => {
   cb(null, user);
 });
