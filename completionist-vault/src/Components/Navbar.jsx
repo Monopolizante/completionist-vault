@@ -56,7 +56,7 @@ export default function Navbar() {
   }, []);
 
   const handleSteamClick = () => {
-    navigate("/Login");
+    navigate("/loginVault");
   };
 
   const toggleDropdown = () => {
@@ -116,7 +116,7 @@ export default function Navbar() {
 
               {dropdownOpen && (
                 <div className="user-dropdown-menu">
-                  <button className="dropdown-item" onClick={() => { setDropdownOpen(false); navigate("/loginVault"); }}>
+                  <button className="dropdown-item" onClick={() => { setDropdownOpen(false); navigate("/cadastroVault"); }}>
                     <IconLink size={16} /> Conectar Vault-Account
                   </button>
                   <div className="dropdown-divider"></div>

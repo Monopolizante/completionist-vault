@@ -28,7 +28,7 @@ function LoginNew() {
 
                         <p className="section-label">entrar na conta</p>
                         <div className="card">
-                            <form action="" method='POST'>
+                            <form action="http://localhost:3000/login" method='POST'>
                                 <div className="field">
                                     <label>Email ou usuário</label>
                                     <input type="email" placeholder="Name@email.com" name="email" />

@@ -266,7 +266,16 @@ app.post("/cadastro", isAuthenticated, (req, res) => {
   }
 })
 
-
+app.post("/login",  async (req, res) => {
+  const email = req.body.email
+  const senhaCrua = req.body.senha
+  try {
+    const result = await db.query("SELECT * FROM vault_accounts WHERE email = $1", [email])
+    console.log(result.rows)
+  } catch (error) {
+    console.log(error)
+  }
+})
 
 passport.serializeUser((user, cb) => {
   cb(null, user);
@@ -274,6 +283,8 @@ passport.serializeUser((user, cb) => {
 passport.deserializeUser((user, cb) => {
   cb(null, user);
 });
+
+
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

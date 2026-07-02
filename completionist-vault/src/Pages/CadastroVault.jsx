@@ -11,25 +11,38 @@ import "../Styles/Login.css";
 import Navbar from '../Components/Navbar';
 
 
-function LoginVault() {
-
-    const [user, setUser] = useState(null);
-
+function CadastroVault() {
+    const[loading, setLoading] = useState(true)
+    const[user, setUser] = useState({})
     useEffect(() => {
         const checkUser = async () => {
             try {
-                const response = await axios.get("http://localhost:3000/api/user", { withCredentials: true });
-                console.log(response.data)
-                setUser(response.data);
-                
+                const portaAPI = 3000;
+                console.log('user')
+                const userInfo = await axios.get(`http://localhost:${portaAPI}/api/user`, { withCredentials: true });
+                setUser(userInfo)
+                console.log("Aura?" + user)
             } catch (err) {
-                setUser(null);
+                console.log(err)
             }
+            setLoading(false)
         };
         checkUser();
     }, []);
 
+    if (loading) {
+        return (
+          <div className="page">
+            <Navbar />
+            <div className="sync-loading-text">
+              Carregando...
+            </div>
+          </div>
+        );
+      }
+
     return (
+        
         <div className='page'>
             <Navbar />
             <form action="http://localhost:3000/cadastro" method='POST'>
@@ -57,7 +70,7 @@ function LoginVault() {
                         <div className="card">
                             <div className="field">
                                 <label>Nome de usuário Vault Account</label>
-                                <input type="text" placeholder="como quer ser chamado?" defaultValue="ShrekNinjaShaolin" />
+                                <input type="text" placeholder="como quer ser chamado?" defaultValue={user.data.displayName} />
                                 <p className="hint">Pode ser diferente do seu nick na Steam.</p>
                             </div>
                             <div className="field">
@@ -86,4 +99,4 @@ function LoginVault() {
     )
 }
 
-export default LoginVault
+export default CadastroVault
