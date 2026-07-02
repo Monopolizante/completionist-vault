@@ -127,7 +127,7 @@ app.get("/dados/user/jogos/:id", isAuthenticated, async (req, res) => {
   try {
     const id = req.params.id;
     const userData = req.user;
-    const jogosComConquistas = await teste(id)
+    const jogosComConquistas = await pegarDados(id)
     // Mapeia os jogos buscando as conquistas de forma paralela e segura;
     
     console.log(`Tem a vaultAccount?${hasVaultAccount}`)
@@ -209,16 +209,11 @@ app.get("/dados/user/jogos/:id/conquistas/:appId", isAuthenticated, async (req, 
 
 
 app.post("/cadastro", isAuthenticated, async (req, res) => {
-  const ownedGames = await axios.get(
-    `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${API_KEY}&steamid=${req.user._json.steamid}&format=json&include_appinfo=true&include_played_free_games=true`,
-  );
-  
-  
-
-  const gameCount = ownedGames.data.response.gameCount
+  const dados = await pegarDados(req.user._json.steamid)
+  const stats = await calcularStats(dados)
+  console.log(stats)
   const email = req.body.email 
   const senhaCrua = req.body.senha
-  console.log(gameCount.data)
   try {
     bcrypt.hash(senhaCrua, saltRounds, (err, senhaCriptografada) => 
     {
@@ -262,7 +257,7 @@ app.listen(port, () => {
   console.log(`Did the API KEY load?`, process.env.API_KEY ? "yes" : "no");
 });
 
-async function teste(id) {
+async function pegarDados(id) {
   const steamResponse = await axios.get(
       `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${API_KEY}&steamid=${id}&format=json&include_appinfo=true&include_played_free_games=true`,
     );
@@ -305,5 +300,27 @@ async function teste(id) {
       return jogosComConquistas
 }
 
+async function calcularStats(listaJogos){
+  const totalPlatinados = listaJogos.filter(g => g.total > 0 && g.unlocked === g.total).length;
+  const totalJogos = listaJogos.length
+  //Cálculo de conquistas totais 
+  const totalUnlocked = listaJogos.reduce((acc, g) => acc + (g.unlocked || 0), 0);
+  const totalAchievementsPossiveis = listaJogos.reduce((acc, g) => acc + (g.total || 0), 0);
+
+  //Cálculo de horas totais
+  const totalHoras = listaJogos.reduce((acc, g) => {
+    // Ajeita o 'playtime_forever' que API envia em minutos, converte para horas dividindo por 60
+    const horasNumero = g.playtime_forever ? Math.floor(g.playtime_forever / 60) : 0;
+    return acc + horasNumero;
+  }, 0);
+  const response = {
+    totalPlatinados: totalPlatinados,
+    totalUnlocked: totalUnlocked,
+    totalAchievementsPossiveis: totalAchievementsPossiveis,
+    totalHoras: totalHoras,
+    totalJogos: totalJogos
+  }
+  return response
+}
 
 // Middleware to protect API routes

@@ -10,6 +10,7 @@ function Stats() {
     const portaAPI = 3000
     const[userGames, setUserGames] = useState([])
     const[loading, setLoading] = useState(true)
+    const[isLoggedIn, setIsLoggedIn] = useState(false)
     useEffect(() => {
         const pegarDados = async () => {
             try{
@@ -18,10 +19,12 @@ function Stats() {
                 if (dados.data.jogosUsuario?.response?.games){
                     const respostaDados = dados.data.jogosUsuario.response.games 
                     setUserGames(respostaDados)
+                    setIsLoggedIn(true)
                 }
                 setLoading(false)
             } catch (err){
                 console.log(err)
+                window.location.href = "http://localhost:3000/auth/steam";
             }
         }
         pegarDados()

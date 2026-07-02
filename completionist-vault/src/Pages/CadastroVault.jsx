@@ -24,6 +24,7 @@ function CadastroVault() {
                 console.log("Aura?" + user)
             } catch (err) {
                 console.log(err)
+                window.location.href = "http://localhost:3000/auth/steam";
             }
             setLoading(false)
         };
