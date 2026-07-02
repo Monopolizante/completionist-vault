@@ -244,14 +244,19 @@ app.get("/dados/user/jogos/:id/conquistas/:appId", isAuthenticated, async (req, 
   }
 });
 
-app.post("/cadastro", isAuthenticated, (req, res) => {
-  const userId = req.user._json.steamid
+app.post("/cadastro", isAuthenticated, async (req, res) => {
+  const ownedGames = await axios.get(
+    `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${API_KEY}&steamid=${req.user._json.steamid}&format=json&include_appinfo=true&include_played_free_games=true`,
+  );
+  
+  const gameCount = ownedGames.data.response.gameCount
   const email = req.body.email 
   const senhaCrua = req.body.senha
+  console.log(gameCount.data)
   try {
     bcrypt.hash(senhaCrua, saltRounds, (err, senhaCriptografada) => 
     {
-      db.query("INSERT INTO vault_accounts VALUES($1, $2, $3)", [userId, email, senhaCriptografada], (err) => {
+      db.query("INSERT INTO vault_accounts VALUES($1, $2, $3)", [req.user._json.steamid, email, senhaCriptografada], (err) => {
        if (err){
          console.log(`Erro durante a inserção de dados: ${err}`)
        } else{

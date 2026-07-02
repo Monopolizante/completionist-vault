@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS vault_accounts(
 	password TEXT NOT NULL
 ); 
 
-CREATE TABLE IF NOT EXISTS vault_profile(
+CREATE TABLE IF NOT EXISTS vault_profiles(
 	steam_id BIGINT REFERENCES vault_accounts(steam_id),
 	numJogo INT NOT NULL DEFAULT 0,
 	numConquistas INT NOT NULL DEFAULT 0,
