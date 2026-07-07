@@ -37,7 +37,7 @@
 
 
 /* ---- Botoes dos Filtros ----*/
-.filter-container{
+.filter-container {
     margin-top: 1rem;
     display: flex;
     gap: 4px;
@@ -149,21 +149,21 @@
 }
 
 .game-overlay {
-position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(0, 0, 0, 0);
-  opacity: 0;
-  transition: all 0.3s ease;
-  pointer-events: none;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0);
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
 }
 
 .game-cover-inner:hover .game-overlay {
-  opacity: 1;
-  pointer-events: auto;
-  background-color: rgba(0, 0, 0, 0.4); 
+    opacity: 1;
+    pointer-events: auto;
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 .play-btn {
@@ -311,7 +311,8 @@ position: absolute;
 }
 
 .controls-container .filter-container {
-    margin-top: 0; /* Reseta margem antiga para alinhar perfeitamente */
+    margin-top: 0;
+    /* Reseta margem antiga para alinhar perfeitamente */
 }
 
 .search-wrapper {
@@ -350,10 +351,12 @@ position: absolute;
 
 /*Ajuste anti-borrão nos Cards de Jogo */
 .game-cover-bg {
-    image-rendering: -webkit-optimize-contrast; /* Melhora nitidez no Chrome/Safari */
+    image-rendering: -webkit-optimize-contrast;
+    /* Melhora nitidez no Chrome/Safari */
     image-rendering: crisp-edges;
     background-repeat: no-repeat;
 }
+
 /* Estilo adaptado do inline para o texto de sincronização */
 .sync-loading-text {
     color: #fff;
@@ -377,4 +380,80 @@ position: absolute;
 .lock-open-icon {
     margin-bottom: 12px;
     color: var(--text-primary);
+}
+
+/* ---------- Card de Demonstração ---------- */
+
+.preview-card {
+
+    cursor: default;
+
+}
+
+.preview-card:hover {
+
+    transform: none;
+
+    box-shadow: none;
+
+    border-color: var(--border-subtle);
+
+}
+
+/* ---------- Fade ---------- */
+
+@keyframes fadeCard {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateY(15px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateY(0);
+
+    }
+
+}
+
+/* ---------- Carousel ---------- */
+
+.carouselDots {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    margin-top: 18px;
+
+}
+
+.dot {
+
+    width: 10px;
+
+    height: 10px;
+
+    border-radius: 50%;
+
+    background: #555;
+
+    transition: .3s;
+
+}
+
+.dot.active {
+
+    background: var(--blue-500);
+
+    transform: scale(1.25);
+
 }
