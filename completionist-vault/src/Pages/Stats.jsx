@@ -5,6 +5,7 @@ import StatsBar from '../Components/StatsBar';
 import axios from 'axios';
 import "../Styles/pages.css";
 import { useSearchParams } from 'react-router-dom';
+import Profile from './Profile';
 
 function Stats() {
     const portaAPI = 3000
@@ -44,7 +45,8 @@ function Stats() {
     return (
         <div className='page'>
             <Navbar />
-            <StatsBar games={userGames}/>
+            <Profile />
+            {/* <StatsBar games={userGames}/> */}
         </div>
     )
 }

@@ -1,0 +1,271 @@
+/* ===========================
+        VAULT LEVEL
+=========================== */
+
+.vaultLevel{
+
+    width:100%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+
+    padding:25px;
+
+    border-radius:18px;
+
+    background:linear-gradient(
+        180deg,
+        rgba(255,255,255,.04),
+        rgba(255,255,255,.02)
+    );
+
+    border:1px solid rgba(255,255,255,.08);
+
+    backdrop-filter:blur(10px);
+
+}
+
+/* ===========================
+        HEADER
+=========================== */
+
+.vaultHeader{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.vaultTitle{
+
+    color:#8d8d8d;
+
+    font-size:.9rem;
+
+    letter-spacing:1px;
+
+    text-transform:uppercase;
+
+}
+
+.vaultHeader h2{
+
+    margin-top:5px;
+
+    font-size:3rem;
+
+    transition:.4s;
+
+}
+
+.vaultRank{
+
+    padding:8px 18px;
+
+    border-radius:999px;
+
+    background:rgba(255,255,255,.05);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    color:#d9d9d9;
+
+    font-weight:600;
+
+}
+
+/* ===========================
+          BARRA
+=========================== */
+
+.vaultBarBackground{
+
+    position:relative;
+
+    width:100%;
+
+    height:18px;
+
+    overflow:hidden;
+
+    border-radius:999px;
+
+    background:#191919;
+
+    border:1px solid rgba(255,255,255,.08);
+
+}
+
+/* brilho interno */
+
+.vaultBarBackground::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:linear-gradient(
+        180deg,
+        rgba(255,255,255,.15),
+        rgba(255,255,255,0)
+    );
+
+    pointer-events:none;
+
+}
+
+/* ===========================
+        BARRA XP
+=========================== */
+
+.vaultBarFill{
+
+    position:relative;
+
+    height:100%;
+
+    border-radius:999px;
+
+    overflow:hidden;
+
+    transition:width .8s ease;
+
+    background-size:300% 100%;
+
+    animation:
+
+        gradientMove 5s linear infinite,
+
+        glowPulse 2.5s ease-in-out infinite;
+
+}
+
+/* reflexo andando */
+
+.vaultBarFill::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:linear-gradient(
+
+        120deg,
+
+        transparent 25%,
+
+        rgba(255,255,255,.75) 50%,
+
+        transparent 75%
+
+    );
+
+    background-size:200% 100%;
+
+    animation:shine 2s linear infinite;
+
+}
+
+/* ===========================
+            XP
+=========================== */
+
+.vaultXP{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    color:#bdbdbd;
+
+    font-size:.95rem;
+
+    font-weight:600;
+
+}
+
+/* ===========================
+        ANIMAÇÕES
+=========================== */
+
+@keyframes gradientMove{
+
+    0%{
+
+        background-position:0% 50%;
+
+    }
+
+    100%{
+
+        background-position:300% 50%;
+
+    }
+
+}
+
+@keyframes shine{
+
+    from{
+
+        background-position:-200% 0;
+
+    }
+
+    to{
+
+        background-position:200% 0;
+
+    }
+
+}
+
+@keyframes glowPulse{
+
+    0%{
+
+        filter:brightness(.95);
+
+    }
+
+    50%{
+
+        filter:brightness(1.25);
+
+    }
+
+    100%{
+
+        filter:brightness(.95);
+
+    }
+
+}
+
+/* ===========================
+      HOVER
+=========================== */
+
+.vaultLevel:hover{
+
+    transform:translateY(-3px);
+
+    transition:.3s;
+
+    border-color:rgba(255,255,255,.18);
+
+    box-shadow:
+
+        0 0 25px rgba(255,255,255,.05);
+
+}

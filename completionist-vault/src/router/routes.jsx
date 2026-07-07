@@ -6,6 +6,7 @@ import Stats from '../Pages/Stats'
 import Achievements from '../Components/Achievements'
 import LoginVault from '../Pages/LoginVault'
 import CadastroVault from '../Pages/CadastroVault'
+import TestesIrados from '../Pages/TestesIrados'
 const router = createBrowserRouter([
     {path: "/", element: <Home />},
     {path: "/Games", element: <GamesNew />},
@@ -14,7 +15,8 @@ const router = createBrowserRouter([
     //{path: "/Achievements", element: <Achievements />}
     {path: "/games/:appId/achievements", element: <Achievements />},
     {path: "/loginVault", element: <LoginVault />},
-    {path: "/cadastroVault", element: <CadastroVault/>}
+    {path: "/cadastroVault", element: <CadastroVault/>},
+    {path: "/Teste", element: <TestesIrados/>}
 
 ])
 

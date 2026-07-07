@@ -1,4 +1,8 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+
 import { IconTrophy } from "@tabler/icons-react";
 
 import gamesData from "../Scripts/gamesData";
@@ -7,20 +11,18 @@ import "../Styles/Cards.css";
 function CardPreview() {
 
     const [currentGame, setCurrentGame] = useState(0);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
-
         const interval = setInterval(() => {
-
             setCurrentGame((prev) =>
                 (prev + 1) % gamesData.length
             );
-
         }, 3000);
-
         return () => clearInterval(interval);
 
     }, []);
+    
 
     const game = gamesData[currentGame];
 

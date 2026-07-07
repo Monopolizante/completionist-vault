@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "../Styles/pages.css";
@@ -12,6 +12,11 @@ import CardPreview from '../Components/CardPreview';
 
 function Home() {
   const portaAPI = 3000;
+  const [jogo, setJogo] = useState();
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+
   const pegarDados = async () => {
     const user_info = await axios.get(`http://localhost:${portaAPI}/api/user`, { withCredentials: true })
     //const user_games = await axios.get(`http://localhost:${portaAPI}/dados/user/jogos`, {withCredentials: true})
@@ -20,9 +25,43 @@ function Home() {
     //console.log(user_games)
     setJogo(response.data.game.gameName)
   };
-  const [jogo, setJogo] = useState();
-  const navigate = useNavigate();
 
+  useEffect(() => {
+
+    const verificarLogin = async () => {
+      try {
+
+        const portaAPI = 3000;
+
+        await axios.get(
+          `http://localhost:${portaAPI}/api/user`,
+          { withCredentials: true }
+        )
+
+        setIsLoggedIn(true);
+      } catch {
+
+        setIsLoggedIn(false);
+      }
+    };
+
+    verificarLogin();
+
+  }, []);
+
+  const handleComecar = () => {
+
+    if (isLoggedIn) {
+
+      navigate("/games");
+
+    } else {
+
+      navigate("/loginVault");
+
+    }
+
+  };
 
 
   return (
@@ -55,7 +94,7 @@ function Home() {
 
             <div className="heroBotoes">
 
-              <button className="btnPrincipal" onClick={() => navigate("/loginvault")}>
+              <button className="btnPrincipal" onClick={handleComecar}>
                 Começar Agora
               </button>
 

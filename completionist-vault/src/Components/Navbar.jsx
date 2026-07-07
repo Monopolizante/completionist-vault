@@ -3,10 +3,10 @@ import { NavLink, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // Importando os ícones necessários do Tabler Icons
-import { 
-  IconChevronDown, 
-  IconLink, 
-  IconLogout 
+import {
+  IconChevronDown,
+  IconLink,
+  IconLogout
 } from '@tabler/icons-react';
 
 import "../Styles/CompStyle.css";
@@ -19,8 +19,9 @@ const SteamIcon = () => (
 
 const NAV_LINKS = [
   { label: "GAMES", to: "/Games" },
-  { label: "STATS", to: "/Stats" },
+  { label: "PROFILE", to: "/Stats" },
   { label: "ABOUT", to: "/About" },
+  { label: "TESTES", to: "/Teste" }
 
 ];
 
@@ -64,10 +65,20 @@ export default function Navbar() {
   };
 
   // Adicionar rota Logout(Robzon) aqui!
-  const handleLogout = () => {
-    setUser(null);
-    setDropdownOpen(false);
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await axios.get("http://localhost:3000/logout", {
+        withCredentials: true
+      });
+
+      setUser(null);
+      setDropdownOpen(false);
+      navigate("/");
+      window.location.reload();
+
+    } catch (err) {
+      console.error("Erro ao fazer logout:", err);
+    }
   };
 
   return (
@@ -108,9 +119,9 @@ export default function Navbar() {
                   alt="User Avatar"
                   className="user-avatar-nav"
                 />
-                <IconChevronDown 
-                  size={12} 
-                  className={`dropdown-arrow ${dropdownOpen ? 'open' : ''}`} 
+                <IconChevronDown
+                  size={12}
+                  className={`dropdown-arrow ${dropdownOpen ? 'open' : ''}`}
                 />
               </button>
 
