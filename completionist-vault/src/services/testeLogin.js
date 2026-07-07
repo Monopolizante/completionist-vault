@@ -19,7 +19,9 @@ const port = 3000; // Porta do Backend
 const URL_REACT = "http://localhost:5173"; // MUDE ISSO para a porta que o seu React estiver rodando
 const app = express();
 const saltRounds = 10;
+const portaAPI=3000
 let hasVaultAccount= false
+
 
 // 2. Ajuste CRÍTICO no CORS para permitir o envio de cookies de sessão
 app.use(
@@ -125,49 +127,10 @@ app.get("/dados/user/jogos/:id", isAuthenticated, async (req, res) => {
   try {
     const id = req.params.id;
     const userData = req.user;
-    const steamResponse = await axios.get(
-      `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${API_KEY}&steamid=${id}&format=json&include_appinfo=true&include_played_free_games=true`,
-    );
-
-    // Pega a lista original de jogos retornada pela Steam
-    const listaJogos = steamResponse.data.response?.games || [];
-
-    // Mapeia os jogos buscando as conquistas de forma paralela e segura
-    const jogosComConquistas = await Promise.all(
-      listaJogos.map(async (jogo) => {
-        // Se o usuário nunca jogou o título, não gasta requisição com a API
-        if (jogo.playtime_forever === 0) {
-          return { ...jogo, has_achievements: false, unlocked: 0, total: 0, pct: 0 };
-        }
-
-        try {
-          // Busca o status atualizado de conquistas do usuário para este AppID
-          const playerAchievementsUrl = `https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/?appid=${jogo.appid}&key=${API_KEY}&steamid=${id}`;
-          const playerRes = await axios.get(playerAchievementsUrl);
-          const achievements = playerRes.data.playerstats.achievements || [];
-
-          if (achievements.length > 0) {
-            const unlocked = achievements.filter(a => a.achieved === 1).length;
-            const total = achievements.length;
-            const pct = Math.round((unlocked / total) * 100);
-
-            return {
-              ...jogo,
-              has_achievements: true,
-              unlocked: unlocked,
-              total: total,
-              pct: pct,
-              vaultAccount: hasVaultAccount
-            };
-          }
-        } catch (err) {
-          // Ignora erros caso o jogo não possua suporte oficial a conquistas na API
-        }
-
-        return { ...jogo, has_achievements: false, unlocked: 0, total: 0, pct: 0 };
-      })
-    );
-    console.log(hasVaultAccount)
+    const jogosComConquistas = await pegarDados(id)
+    // Mapeia os jogos buscando as conquistas de forma paralela e segura;
+    
+    console.log(`Tem a vaultAccount?${hasVaultAccount}`)
     res.setHeader("Content-Type", "application/json");
     res.json({
       infoUsuario: userData._json,
@@ -244,23 +207,41 @@ app.get("/dados/user/jogos/:id/conquistas/:appId", isAuthenticated, async (req, 
   }
 });
 
-app.post("/cadastro", isAuthenticated, (req, res) => {
-  const userId = req.user._json.steamid
+
+app.post("/cadastro", isAuthenticated, async (req, res) => {
+  const dados = await pegarDados(req.user._json.steamid)
+  const stats = await calcularStats(dados)
+  console.log(stats)
+  const steamId = req.user._json.steamid
   const email = req.body.email 
   const senhaCrua = req.body.senha
-  try {
-    bcrypt.hash(senhaCrua, saltRounds, (err, senhaCriptografada) => 
-    {
-      db.query("INSERT INTO vault_accounts VALUES($1, $2, $3)", [userId, email, senhaCriptografada], (err) => {
-       if (err){
-         console.log(`Erro durante a inserção de dados: ${err}`)
-       } else{
-        hasVaultAccount = true
-        res.redirect(`${URL_REACT}/Games`);
-       }
-      })
 
-    })
+  try {
+    const checkIfExists = await db.query("SELECT * FROM vault_accounts WHERE steam_id = $1", [steamId])
+    if (checkIfExists.rows.length > 0){
+      res.send(`Conta já existe`)
+    } else {
+        bcrypt.hash(senhaCrua, saltRounds, async (err, senhaCriptografada) => 
+        {
+          db.query("INSERT INTO vault_accounts VALUES($1, $2, $3)", [steamId, email, senhaCriptografada], (err) => {
+          if (err){
+            console.log(`Erro durante a inserção de dados: ${err}`)
+            res.sendStatus(500).send(`Erro durante a inserção de dados ${err}`)
+          } else{
+            hasVaultAccount = true
+            db.query("INSERT INTO vault_profiles VALUES($1, $2, $3, $4, $5, $6)", [steamId, stats.totalPlatinados, stats.totalUnlocked, stats.totalJogos, stats.totalHoras, Math.round(stats.totalPoint)], (err) =>{
+              if(err){
+                console.log(`Erro durante a inserção de dados na table profile: ${err}`)
+                res.sendStatus(500).send(`Erro durante a inserção de dados na table profile ${err}`)
+              } else{
+                res.redirect(`${URL_REACT}/games`)
+              }
+            })
+          }
+          })
+        })
+        
+    }
   } catch (error) {
     console.log(`Erro interno no servidor: ${error}`)
   }
@@ -290,5 +271,73 @@ app.listen(port, () => {
   console.log(`Server running on port ${port}`);
   console.log(`Did the API KEY load?`, process.env.API_KEY ? "yes" : "no");
 });
+
+async function pegarDados(id) {
+  const steamResponse = await axios.get(
+      `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${API_KEY}&steamid=${id}&format=json&include_appinfo=true&include_played_free_games=true`,
+    );
+  
+    // Pega a lista original de jogos retornada pela Steam
+    const listaJogos = steamResponse.data.response?.games || [];
+    const jogosComConquistas = await Promise.all(
+      listaJogos.map(async (jogo) => {
+        // Se o usuário nunca jogou o título, não gasta requisição com a API
+        if (jogo.playtime_forever === 0) {
+          return { ...jogo, has_achievements: false, unlocked: 0, total: 0, pct: 0 };
+        }
+
+        try {
+          // Busca o status atualizado de conquistas do usuário para este AppID
+          const playerAchievementsUrl = `https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/?appid=${jogo.appid}&key=${API_KEY}&steamid=${id}`;
+          const playerRes = await axios.get(playerAchievementsUrl);
+          const achievements = playerRes.data.playerstats.achievements || [];
+
+          if (achievements.length > 0) {
+            const unlocked = achievements.filter(a => a.achieved === 1).length;
+            const total = achievements.length;
+            const pct = Math.round((unlocked / total) * 100);
+
+            return {
+              ...jogo,
+              has_achievements: true,
+              unlocked: unlocked,
+              total: total,
+              pct: pct,
+              vaultAccount: hasVaultAccount
+            };
+          }
+        } catch (err) {
+          // Ignora erros caso o jogo não possua suporte oficial a conquistas na API
+        }
+        
+        return { ...jogo, has_achievements: false, unlocked: 0, total: 0, pct: 0 };
+      }))
+      return jogosComConquistas
+}
+
+async function calcularStats(listaJogos){
+  const totalPlatinados = listaJogos.filter(g => g.total > 0 && g.unlocked === g.total).length;
+  const totalJogos = listaJogos.length
+  //Cálculo de conquistas totais 
+  const totalUnlocked = listaJogos.reduce((acc, g) => acc + (g.unlocked || 0), 0);
+  const totalAchievementsPossiveis = listaJogos.reduce((acc, g) => acc + (g.total || 0), 0);
+
+  //Cálculo de horas totais
+  const totalHoras = listaJogos.reduce((acc, g) => {
+    // Ajeita o 'playtime_forever' que API envia em minutos, converte para horas dividindo por 60
+    const horasNumero = g.playtime_forever ? Math.floor(g.playtime_forever / 60) : 0;
+    return acc + horasNumero;
+  }, 0)
+  const totalPoints = (totalUnlocked + totalHoras) * 2.5
+  const response = {
+    totalPlatinados: totalPlatinados,
+    totalUnlocked: totalUnlocked,
+    totalAchievementsPossiveis: totalAchievementsPossiveis,
+    totalHoras: totalHoras,
+    totalJogos: totalJogos,
+    totalPoint: totalPoints
+  }
+  return response
+}
 
 // Middleware to protect API routes

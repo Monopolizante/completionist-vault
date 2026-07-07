@@ -1,10 +1,9 @@
 import "../Styles/CompStyle.css";
 import gamesData from '../Scripts/gamesData';
+import { useEffect, useState } from "react";
 
 // Puxar lista dos jogos(API version) 
-function StatsBar({ games }) {
-  
-  //Calculo total de platina (Adaptado para não quebrar tudo enquanto não há dados de conquistas da API osss)
+function StatsBar({games}) {
   const totalPlatinados = games.filter(g => g.total > 0 && g.unlocked === g.total).length;
 
   //Cálculo de conquistas totais 
@@ -17,6 +16,12 @@ function StatsBar({ games }) {
     const horasNumero = g.playtime_forever ? Math.floor(g.playtime_forever / 60) : 0;
     return acc + horasNumero;
   }, 0);
+  //Calculo total de platina (Adaptado para não quebrar tudo enquanto não há dados de conquistas da API osss)
+
+  //Cálculo de conquistas totais 
+  
+
+  //Cálculo de horas totais
 
   return (
     <div className='stats-bar'>
