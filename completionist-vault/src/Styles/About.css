@@ -1,0 +1,331 @@
+/* ===========================
+        ABOUT PAGE
+=========================== */
+
+.aboutPage{
+    min-height: 100vh;
+    color: var(--text-primary);
+    background:
+        radial-gradient(circle at top left, rgba(78, 140, 255, 0.16), transparent 34%),
+        radial-gradient(circle at top right, rgba(139, 92, 246, 0.14), transparent 36%),
+        var(--bg-primary);
+}
+
+.aboutContainer{
+    width: 90%;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 70px 0 100px;
+}
+
+/* ===========================
+        HERO
+=========================== */
+
+.aboutHero{
+    min-height: 55vh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    padding: 60px;
+    border-radius: 28px;
+
+    background:
+        linear-gradient(135deg, rgba(255,255,255,.07), rgba(255,255,255,.025)),
+        radial-gradient(circle at top right, rgba(245, 197, 24, .16), transparent 34%);
+
+    border: 1px solid rgba(255,255,255,.1);
+    box-shadow: 0 24px 60px rgba(0,0,0,.34);
+
+    position: relative;
+    overflow: hidden;
+}
+
+.aboutHero::before{
+    content: "";
+    position: absolute;
+    inset: -2px;
+
+    background:
+        linear-gradient(
+            120deg,
+            transparent,
+            rgba(78, 140, 255, .2),
+            rgba(245, 197, 24, .15),
+            transparent
+        );
+
+    opacity: .75;
+    pointer-events: none;
+}
+
+.aboutHero > *{
+    position: relative;
+    z-index: 2;
+}
+
+.aboutBadge{
+    width: fit-content;
+
+    display: inline-flex;
+    align-items: center;
+
+    margin-bottom: 18px;
+    padding: 8px 16px;
+
+    border-radius: 999px;
+
+    color: #f5c518;
+    background: rgba(245, 197, 24, .08);
+    border: 1px solid rgba(245, 197, 24, .22);
+
+    font-size: .85rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.aboutHero h1{
+    max-width: 780px;
+    margin-bottom: 22px;
+
+    font-size: clamp(2.6rem, 6vw, 5rem);
+    line-height: 1;
+}
+
+.aboutHero p{
+    max-width: 780px;
+
+    color: var(--text-secondary);
+    font-size: 1.15rem;
+    line-height: 1.8;
+}
+
+/* ===========================
+        ABOUT SECTION
+=========================== */
+
+.aboutSection{
+    margin-top: 70px;
+    padding: 45px;
+    border-radius: 24px;
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.025));
+
+    border: 1px solid rgba(255,255,255,.08);
+}
+
+.aboutSection h2,
+.teamHeader h2{
+    margin-bottom: 18px;
+
+    font-size: 2.4rem;
+}
+
+.aboutSection > p,
+.teamHeader p{
+    max-width: 900px;
+
+    color: var(--text-secondary);
+    line-height: 1.8;
+    font-size: 1.05rem;
+}
+
+/* ===========================
+        CARDS
+=========================== */
+
+.aboutCards{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+
+    margin-top: 35px;
+}
+
+.aboutCard{
+    min-height: 230px;
+
+    padding: 28px;
+    border-radius: 20px;
+
+    background: rgba(0,0,0,.18);
+    border: 1px solid rgba(255,255,255,.08);
+
+    transition: .25s;
+    position: relative;
+    overflow: hidden;
+}
+
+.aboutCard::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 3px;
+
+    background: linear-gradient(90deg, #4e8cff, #8b5cf6, #f5c518);
+}
+
+.aboutCard:hover{
+    transform: translateY(-6px);
+    border-color: rgba(255,255,255,.18);
+    box-shadow: 0 20px 45px rgba(0,0,0,.32);
+}
+
+.aboutCard h3{
+    margin-bottom: 14px;
+
+    color: var(--text-primary);
+    font-size: 1.25rem;
+}
+
+.aboutCard p{
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+/* ===========================
+        TEAM
+=========================== */
+
+.teamSection{
+    margin-top: 70px;
+}
+
+.teamHeader{
+    margin-bottom: 35px;
+}
+
+.teamGrid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+}
+
+.teamCard{
+    padding: 32px;
+    border-radius: 22px;
+
+    background:
+        radial-gradient(circle at top, rgba(78, 140, 255, .12), transparent 38%),
+        linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.025));
+
+    border: 1px solid rgba(255,255,255,.08);
+
+    text-align: center;
+    transition: .25s;
+}
+
+.teamCard:hover{
+    transform: translateY(-6px);
+    border-color: rgba(78, 140, 255, .35);
+    box-shadow:
+        0 20px 45px rgba(0,0,0,.32),
+        0 0 30px rgba(78, 140, 255, .12);
+}
+
+.teamAvatar{
+    width: 86px;
+    height: 86px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 20px;
+
+    border-radius: 24px;
+
+    color: white;
+    font-size: 2rem;
+    font-weight: 800;
+
+    background:
+        linear-gradient(135deg, #4e8cff, #8b5cf6);
+
+    border: 1px solid rgba(255,255,255,.18);
+    box-shadow:
+        0 0 28px rgba(78, 140, 255, .28),
+        inset 0 0 18px rgba(255,255,255,.12);
+}
+
+.teamCard h3{
+    margin-bottom: 6px;
+
+    font-size: 1.45rem;
+}
+
+.teamCard span{
+    display: inline-block;
+
+    margin-bottom: 18px;
+    padding: 6px 12px;
+
+    color: #7db0ff;
+    background: rgba(78, 140, 255, .1);
+    border: 1px solid rgba(78, 140, 255, .2);
+    border-radius: 999px;
+
+    font-size: .82rem;
+    font-weight: 700;
+}
+
+.teamCard p{
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+/* ===========================
+        RESPONSIVO
+=========================== */
+
+@media(max-width: 1000px){
+
+    .aboutCards,
+    .teamGrid{
+        grid-template-columns: 1fr;
+    }
+
+    .aboutHero{
+        min-height: auto;
+        padding: 45px;
+    }
+
+}
+
+@media(max-width: 620px){
+
+    .aboutContainer{
+        width: 92%;
+        padding-top: 40px;
+    }
+
+    .aboutHero,
+    .aboutSection{
+        padding: 28px;
+        border-radius: 22px;
+    }
+
+    .aboutSection h2,
+    .teamHeader h2{
+        font-size: 2rem;
+    }
+
+    .aboutHero p,
+    .aboutSection > p,
+    .teamHeader p{
+        font-size: 1rem;
+    }
+
+    .teamCard,
+    .aboutCard{
+        padding: 24px;
+    }
+
+}

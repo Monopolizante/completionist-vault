@@ -12,7 +12,7 @@ import {
 
 function VaultLevel() {
     // Dados locais por enquanto
-    const level = 27;
+    const level = 57;
     const currentXP = 3850;
     const nextLevelXP = 5000;
 

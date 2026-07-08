@@ -21,7 +21,7 @@ const NAV_LINKS = [
   { label: "GAMES", to: "/Games" },
   { label: "PROFILE", to: "/Stats" },
   { label: "ABOUT", to: "/About" },
-  { label: "TESTES", to: "/Teste" }
+  /* { label: "TESTES", to: "/Teste" } */
 
 ];
 

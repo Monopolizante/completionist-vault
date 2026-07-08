@@ -16,7 +16,7 @@ const router = createBrowserRouter([
     {path: "/games/:appId/achievements", element: <Achievements />},
     {path: "/loginVault", element: <LoginVault />},
     {path: "/cadastroVault", element: <CadastroVault/>},
-    {path: "/Teste", element: <TestesIrados/>}
+    /* {path: "/Teste", element: <TestesIrados/>} */
 
 ])
 

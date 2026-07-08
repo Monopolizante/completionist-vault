@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import Navbar from "../Components/Navbar";
@@ -11,6 +12,7 @@ import "../Styles/Profile.css";
 
 function Profile() {
 
+    const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [games, setGames] = useState([]);
     const [stats, setStats] = useState({
@@ -184,13 +186,25 @@ function Profile() {
 
                     <div className="profileDemoAlert">
 
-                        Você está vendo dados de demonstração. Conecte sua conta Steam
-                        para sincronizar suas estatísticas reais.
+                        <div>
+                            <strong>Modo demonstração ativo</strong>
+
+                            <p>
+                                Você está vendo dados de demonstração. Conecte sua conta Steam
+                                para sincronizar suas estatísticas reais.
+                            </p>
+                        </div>
+
+                        <button
+                            className="profileDemoButton"
+                            onClick={() => navigate("/loginVault")}
+                        >
+                            Conectar Steam
+                        </button>
 
                     </div>
 
                 )}
-
                 <ProfileHeader user={user} />
 
                 <StatsCards stats={stats} />

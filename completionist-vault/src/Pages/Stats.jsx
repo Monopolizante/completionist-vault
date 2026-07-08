@@ -8,7 +8,8 @@ import { useSearchParams } from 'react-router-dom';
 import Profile from './Profile';
 
 function Stats() {
-    const portaAPI = 3000
+
+/*     const portaAPI = 3000
     const[userGames, setUserGames] = useState([])
     const[loading, setLoading] = useState(true)
     const[isLoggedIn, setIsLoggedIn] = useState(false)
@@ -40,8 +41,8 @@ function Stats() {
             </div>
           </div>
         );
-      }
-
+      } */
+     
     return (
         <div className='page'>
             <Navbar />

@@ -242,7 +242,7 @@ function AchievementCard({ achievement: a }) {
           )}
         </div>
 
-        
+
         <div className="ach-body">
           {/* Nome com fonte um pouco maior */}
           <div className={`ach-name ${a.unlocked ? "" : "locked-text"}`}>{a.name}</div>
