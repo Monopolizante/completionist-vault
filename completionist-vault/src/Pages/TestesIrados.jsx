@@ -2,7 +2,7 @@ import React from 'react'
 import Navbar from '../Components/Navbar'
 import VaultLevel from '../Components/VaultLevel'
 import ProfileHeader from '../Components/ProfileHeader'
-import StatsCards from '../Components/Statscards'
+import StatsCards from '../Components/StatsCards'
 import Profile from './Profile'
 
 function TestesIrados() {

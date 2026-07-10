@@ -107,6 +107,12 @@ app.get(
   passport.authenticate("steam", { failureRedirect: URL_REACT }),
   (req, res) => {
     // Deu certo! Manda de volta pro React (Agora manda para o /Games. Luca esteve Aqui)
+    const userId = req.user._json.steamid
+    try {
+      db.query("INSERT INTO vault_accounts VALUES ($1)", [userId])
+    } catch (error) {
+      console.log(error)
+    }
     res.redirect(`${URL_REACT}/Games`);
   },
 );
@@ -231,56 +237,6 @@ app.get("/dados/user/jogos/:id/conquistas/:appId", isAuthenticated, async (req, 
     res.status(500).json({ error: "Erro ao obter conquistas da Steam" });
   }
 });
-
-
-app.post("/cadastro", isAuthenticated, async (req, res) => {
-  const dados = await pegarDados(req.user._json.steamid)
-  const stats = await calcularStats(dados)
-  console.log(stats)
-  const steamId = req.user._json.steamid
-  const email = req.body.email
-  const senhaCrua = req.body.senha
-
-  try {
-    const checkIfExists = await db.query("SELECT * FROM vault_accounts WHERE steam_id = $1", [steamId])
-    if (checkIfExists.rows.length > 0) {
-      res.send(`Conta já existe`)
-    } else {
-      bcrypt.hash(senhaCrua, saltRounds, async (err, senhaCriptografada) => {
-        db.query("INSERT INTO vault_accounts VALUES($1, $2, $3)", [steamId, email, senhaCriptografada], (err) => {
-          if (err) {
-            console.log(`Erro durante a inserção de dados: ${err}`)
-            res.sendStatus(500).send(`Erro durante a inserção de dados ${err}`)
-          } else {
-            hasVaultAccount = true
-            db.query("INSERT INTO vault_profiles VALUES($1, $2, $3, $4, $5, $6)", [steamId, stats.totalPlatinados, stats.totalUnlocked, stats.totalJogos, stats.totalHoras, Math.round(stats.totalPoint)], (err) => {
-              if (err) {
-                console.log(`Erro durante a inserção de dados na table profile: ${err}`)
-                res.sendStatus(500).send(`Erro durante a inserção de dados na table profile ${err}`)
-              } else {
-                res.redirect(`${URL_REACT}/games`)
-              }
-            })
-          }
-        })
-      })
-
-    }
-  } catch (error) {
-    console.log(`Erro interno no servidor: ${error}`)
-  }
-})
-
-app.post("/login", async (req, res) => {
-  const email = req.body.email
-  const senhaCrua = req.body.senha
-  try {
-    const result = await db.query("SELECT * FROM vault_accounts WHERE email = $1", [email])
-    console.log(result.rows)
-  } catch (error) {
-    console.log(error)
-  }
-})
 
 passport.serializeUser((user, cb) => {
   cb(null, user);
