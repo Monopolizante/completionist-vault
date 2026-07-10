@@ -6,8 +6,8 @@ import passport from "passport";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import path from "path";
-import pg from "pg"
-import bcrypt from "bcrypt"
+import pg from "pg";
+import bcrypt from "bcrypt";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,9 +19,8 @@ const port = 3000; // Porta do Backend
 const URL_REACT = "http://localhost:5173"; // MUDE ISSO para a porta que o seu React estiver rodando
 const app = express();
 const saltRounds = 10;
-const portaAPI = 3000
-let hasVaultAccount = false
-
+const portaAPI = 3000;
+let hasVaultAccount = false;
 
 // 2. Ajuste CRÍTICO no CORS para permitir o envio de cookies de sessão
 app.use(
@@ -57,8 +56,6 @@ const isAuthenticated = (req, res, next) => {
   res.status(401).json({ error: "Unauthorized: Please log in first." });
 };
 
-
-
 // 4. Inicializando o Passport
 app.use(passport.initialize());
 app.use(passport.session());
@@ -69,10 +66,10 @@ const db = new pg.Client({
   user: "postgres",
   database: "completionistVault",
   password: process.env.DATABASE_PASSWORD,
-  port: 5432
-})
+  port: 5432,
+});
 
-db.connect()
+db.connect();
 
 // 5. Configurando a Estratégia da Steam
 passport.use(
@@ -105,29 +102,34 @@ app.get("/auth/steam", passport.authenticate("steam"));
 app.get(
   "/auth/steam/return",
   passport.authenticate("steam", { failureRedirect: URL_REACT }),
-  (req, res) => {
+  async (req, res) => {
     // Deu certo! Manda de volta pro React (Agora manda para o /Games. Luca esteve Aqui)
-    const userId = req.user._json.steamid
+    const userId = req.user._json.steamid;
     try {
-      db.query("INSERT INTO vault_accounts VALUES ($1)", [userId])
+      const result = await db.query("SELECT * FROM vault_accounts WHERE steam_id = $1", [userId]);
+      if (result.rows.length > 0) {
+        console.log("Usuário já cadastrado, redirecionando..")
+      } else {
+        await db.query("INSERT INTO vault_accounts VALUES ($1)", [userId]);
+      }
+      res.redirect(`${URL_REACT}/Games`);
     } catch (error) {
-      console.log(error)
+      console.log(error);
+      res.redirect(`${URL_REACT}/Games`);
     }
-    res.redirect(`${URL_REACT}/Games`);
   },
 );
 
 // -----Rota para o React saber quem está logado
 //---- Primeira Versão sem VaultAccount
- app.get("/api/user", (req, res) => {
+app.get("/api/user", (req, res) => {
   if (req.isAuthenticated()) {
     res.json(req.user);
   } else {
     res.status(401).json({ error: "Usuário não autenticado" });
   }
-}); 
+});
 
- 
 // ---Rota para Logout
 app.get("/logout", (req, res, next) => {
   req.logout((err) => {
@@ -138,14 +140,14 @@ app.get("/logout", (req, res, next) => {
     req.session.destroy((err) => {
       if (err) {
         return res.status(500).json({
-          error: "Erro ao encerrar a sessão"
+          error: "Erro ao encerrar a sessão",
         });
       }
 
       res.clearCookie("connect.sid");
 
       return res.status(200).json({
-        message: "Logout realizado com sucesso"
+        message: "Logout realizado com sucesso",
       });
     });
   });
@@ -158,85 +160,102 @@ app.get("/dados/user/jogos/:id", isAuthenticated, async (req, res) => {
   try {
     const id = req.params.id;
     const userData = req.user;
-    const jogosComConquistas = await pegarDados(id)
+    const jogosComConquistas = await pegarDados(id);
     // Mapeia os jogos buscando as conquistas de forma paralela e segura;
 
-    console.log(`Tem a vaultAccount?${hasVaultAccount}`)
+    console.log(`Tem a vaultAccount?${hasVaultAccount}`);
     res.setHeader("Content-Type", "application/json");
     res.json({
       infoUsuario: userData._json,
       jogosUsuario: {
         response: {
-          games: jogosComConquistas
+          games: jogosComConquistas,
         },
-        vaultAccount: hasVaultAccount
+        vaultAccount: hasVaultAccount,
       },
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Erro interno ao processar a biblioteca com conquistas." });
+    res
+      .status(500)
+      .json({
+        error: "Erro interno ao processar a biblioteca com conquistas.",
+      });
   }
 });
 // =========================================================================
 // NOVA ROTA: OBTENÇÃO DINÂMICA DE CONQUISTAS DO JOGO POR USUÁRIO
 // =========================================================================
-app.get("/dados/user/jogos/:id/conquistas/:appId", isAuthenticated, async (req, res) => {
-  try {
-    const { id, appId } = req.params;
+app.get(
+  "/dados/user/jogos/:id/conquistas/:appId",
+  isAuthenticated,
+  async (req, res) => {
+    try {
+      const { id, appId } = req.params;
 
-    // 1. Busca quais conquistas o jogador específico desbloqueou e a data
-    const playerAchievementsUrl = `https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/?appid=${appId}&key=${API_KEY}&steamid=${id}&l=brazilian`;
-    const playerRes = await axios.get(playerAchievementsUrl);
-    const playerStats = playerRes.data.playerstats;
+      // 1. Busca quais conquistas o jogador específico desbloqueou e a data
+      const playerAchievementsUrl = `https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/?appid=${appId}&key=${API_KEY}&steamid=${id}&l=brazilian`;
+      const playerRes = await axios.get(playerAchievementsUrl);
+      const playerStats = playerRes.data.playerstats;
 
-    // 2. Busca o Schema do Jogo para pegar títulos amigáveis, descrições e ícones das conquistas
-    const gameSchemaUrl = `https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=${API_KEY}&appid=${appId}&l=brazilian`;
-    const schemaRes = await axios.get(gameSchemaUrl);
-    const gameSchema = schemaRes.data.game.availableGameStats?.achievements || [];
+      // 2. Busca o Schema do Jogo para pegar títulos amigáveis, descrições e ícones das conquistas
+      const gameSchemaUrl = `https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=${API_KEY}&appid=${appId}&l=brazilian`;
+      const schemaRes = await axios.get(gameSchemaUrl);
+      const gameSchema =
+        schemaRes.data.game.availableGameStats?.achievements || [];
 
-    // Mapeia e cruza as conquistas do jogador com os detalhes globais do Schema
-    const achievementsFormatted = gameSchema.map((sch, index) => {
-      const playerAch = playerStats.achievements?.find(a => a.apiname === sch.name);
+      // Mapeia e cruza as conquistas do jogador com os detalhes globais do Schema
+      const achievementsFormatted = gameSchema.map((sch, index) => {
+        const playerAch = playerStats.achievements?.find(
+          (a) => a.apiname === sch.name,
+        );
 
-      // Formata a data se estiver desbloqueada
-      let formattedDate = null;
-      if (playerAch?.unlocktime) {
-        const dateObj = new Date(playerAch.unlocktime * 1000);
-        formattedDate = dateObj.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
-      }
+        // Formata a data se estiver desbloqueada
+        let formattedDate = null;
+        if (playerAch?.unlocktime) {
+          const dateObj = new Date(playerAch.unlocktime * 1000);
+          formattedDate = dateObj.toLocaleDateString("pt-BR", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          });
+        }
 
-      // Determinação simples de raridade com base nas regras existentes no frontend
-      let rarity = "common";
-      if (index % 4 === 0) rarity = "legendary";
-      else if (index % 3 === 0) rarity = "epic";
-      else if (index % 2 === 0) rarity = "rare";
+        // Determinação simples de raridade com base nas regras existentes no frontend
+        let rarity = "common";
+        if (index % 4 === 0) rarity = "legendary";
+        else if (index % 3 === 0) rarity = "epic";
+        else if (index % 2 === 0) rarity = "rare";
 
-      return {
-        id: index + 1,
-        name: sch.displayName || sch.name,
-        desc: sch.description || "Conquista Secreta",
-        iconUrl: sch.icon,
-        rarity: rarity,
-        unlocked: playerAch ? playerAch.achieved === 1 : false,
-        date: formattedDate
-      };
-    });
+        return {
+          id: index + 1,
+          name: sch.displayName || sch.name,
+          desc: sch.description || "Conquista Secreta",
+          iconUrl: sch.icon,
+          rarity: rarity,
+          unlocked: playerAch ? playerAch.achieved === 1 : false,
+          date: formattedDate,
+        };
+      });
 
-    res.json({
-      name: playerStats.gameName,
-      imageIcon: `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${appId}/header.jpg`,
-      heroBg: "linear-gradient(160deg, #0a1118, #1c242e)",
-      accentColor: "#f5c518",
-      platform: "Steam",
-      achievements: achievementsFormatted,
-      vaultAccount: hasVaultAccount
-    });
-
-  } catch (error) {
-    console.error("Erro ao buscar conquistas na API da Steam:", error.message);
-    res.status(500).json({ error: "Erro ao obter conquistas da Steam" });
-  }
-});
+      res.json({
+        name: playerStats.gameName,
+        imageIcon: `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${appId}/header.jpg`,
+        heroBg: "linear-gradient(160deg, #0a1118, #1c242e)",
+        accentColor: "#f5c518",
+        platform: "Steam",
+        achievements: achievementsFormatted,
+        vaultAccount: hasVaultAccount,
+      });
+    } catch (error) {
+      console.error(
+        "Erro ao buscar conquistas na API da Steam:",
+        error.message,
+      );
+      res.status(500).json({ error: "Erro ao obter conquistas da Steam" });
+    }
+  },
+);
 
 passport.serializeUser((user, cb) => {
   cb(null, user);
@@ -244,8 +263,6 @@ passport.serializeUser((user, cb) => {
 passport.deserializeUser((user, cb) => {
   cb(null, user);
 });
-
-
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
@@ -263,7 +280,13 @@ async function pegarDados(id) {
     listaJogos.map(async (jogo) => {
       // Se o usuário nunca jogou o título, não gasta requisição com a API
       if (jogo.playtime_forever === 0) {
-        return { ...jogo, has_achievements: false, unlocked: 0, total: 0, pct: 0 };
+        return {
+          ...jogo,
+          has_achievements: false,
+          unlocked: 0,
+          total: 0,
+          pct: 0,
+        };
       }
 
       try {
@@ -273,7 +296,7 @@ async function pegarDados(id) {
         const achievements = playerRes.data.playerstats.achievements || [];
 
         if (achievements.length > 0) {
-          const unlocked = achievements.filter(a => a.achieved === 1).length;
+          const unlocked = achievements.filter((a) => a.achieved === 1).length;
           const total = achievements.length;
           const pct = Math.round((unlocked / total) * 100);
 
@@ -283,42 +306,58 @@ async function pegarDados(id) {
             unlocked: unlocked,
             total: total,
             pct: pct,
-            vaultAccount: hasVaultAccount
+            vaultAccount: hasVaultAccount,
           };
         }
       } catch (err) {
         // Ignora erros caso o jogo não possua suporte oficial a conquistas na API
       }
 
-      return { ...jogo, has_achievements: false, unlocked: 0, total: 0, pct: 0 };
-    }))
-  return jogosComConquistas
+      return {
+        ...jogo,
+        has_achievements: false,
+        unlocked: 0,
+        total: 0,
+        pct: 0,
+      };
+    }),
+  );
+  return jogosComConquistas;
 }
 
 async function calcularStats(listaJogos) {
-  const totalPlatinados = listaJogos.filter(g => g.total > 0 && g.unlocked === g.total).length;
-  const totalJogos = listaJogos.length
-  //Cálculo de conquistas totais 
-  const totalUnlocked = listaJogos.reduce((acc, g) => acc + (g.unlocked || 0), 0);
-  const totalAchievementsPossiveis = listaJogos.reduce((acc, g) => acc + (g.total || 0), 0);
+  const totalPlatinados = listaJogos.filter(
+    (g) => g.total > 0 && g.unlocked === g.total,
+  ).length;
+  const totalJogos = listaJogos.length;
+  //Cálculo de conquistas totais
+  const totalUnlocked = listaJogos.reduce(
+    (acc, g) => acc + (g.unlocked || 0),
+    0,
+  );
+  const totalAchievementsPossiveis = listaJogos.reduce(
+    (acc, g) => acc + (g.total || 0),
+    0,
+  );
 
   //Cálculo de horas totais
   const totalHoras = listaJogos.reduce((acc, g) => {
     // Ajeita o 'playtime_forever' que API envia em minutos, converte para horas dividindo por 60
-    const horasNumero = g.playtime_forever ? Math.floor(g.playtime_forever / 60) : 0;
+    const horasNumero = g.playtime_forever
+      ? Math.floor(g.playtime_forever / 60)
+      : 0;
     return acc + horasNumero;
-  }, 0)
-  const totalPoints = (totalUnlocked + totalHoras) * 2.5
+  }, 0);
+  const totalPoints = (totalUnlocked + totalHoras) * 2.5;
   const response = {
     totalPlatinados: totalPlatinados,
     totalUnlocked: totalUnlocked,
     totalAchievementsPossiveis: totalAchievementsPossiveis,
     totalHoras: totalHoras,
     totalJogos: totalJogos,
-    totalPoint: totalPoints
-  }
-  return response
+    totalPoint: totalPoints,
+  };
+  return response;
 }
-
 
 // Middleware to protect API routes
