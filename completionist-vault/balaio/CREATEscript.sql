@@ -3,14 +3,30 @@
 CREATE TABLE IF NOT EXISTS vault_accounts(
 	steam_id BIGINT PRIMARY KEY NOT NULL UNIQUE,
 	email TEXT NOT NULL UNIQUE,
-	password TEXT NOT NULL
+	password TEXT NOT NULL 
 ); 
 
-CREATE TABLE IF NOT EXISTS vault_profiles(
+CREATE TABLE IF NOT EXISTS categoria_platina (
 	steam_id BIGINT REFERENCES vault_accounts(steam_id),
-	numPlatinados INT NOT NULL DEFAULT 0, 
-	numConquistas INT NOT NULL DEFAULT 0,
-	numJogo INT NOT NULL DEFAULT 0,
-	numHorasJogadas REAL NOT NULL DEFAULT 0.00,
-	vaultPoints INT NOT NULL DEFAULT 0
+	app_id BIGINT NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS categoria_favoritos (
+	steam_id BIGINT REFERENCES vault_accounts(steam_id),
+	app_id BIGINT NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS categoria_zerados (
+	steam_id BIGINT REFERENCES vault_accounts(steam_id),
+	app_id BIGINT NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS categoria_jogando (
+	steam_id BIGINT REFERENCES vault_accounts(steam_id),
+	app_id BIGINT NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS categoria_proximo_jogos (
+	steam_id BIGINT REFERENCES vault_accounts(steam_id),
+	app_id BIGINT NOT NULL UNIQUE
 );

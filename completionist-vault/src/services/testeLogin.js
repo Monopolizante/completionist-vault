@@ -21,8 +21,7 @@ const app = express();
 const saltRounds = 10;
 const portaAPI = 3000
 let hasVaultAccount = false
-
-
+let vault_id = 0
 // 2. Ajuste CRÍTICO no CORS para permitir o envio de cookies de sessão
 app.use(
   cors({
@@ -114,9 +113,12 @@ app.get(
 // -----Rota para o React saber quem está logado
 //---- Primeira Versão sem VaultAccount
  app.get("/api/user", (req, res) => {
-  if (req.isAuthenticated()) {
+  if (hasVaultAccount) {
+    console.log(`steam id? ${vault_id} ---- tem conta? ${hasVaultAccount}`)
+    res.json(vault_id)
+  } else if (req.authenticate()){
     res.json(req.user);
-  } else {
+  }else {
     res.status(401).json({ error: "Usuário não autenticado" });
   }
 }); 
@@ -137,7 +139,8 @@ app.get("/logout", (req, res, next) => {
       }
 
       res.clearCookie("connect.sid");
-
+      vault_id = 0
+      hasVaultAccount = false
       return res.status(200).json({
         message: "Logout realizado com sucesso"
       });
@@ -150,12 +153,23 @@ app.get("/logout", (req, res, next) => {
 // ==========================================
 app.get("/dados/user/jogos/:id", isAuthenticated, async (req, res) => {
   try {
-    const id = req.params.id;
-    const userData = req.user;
+    console.log("penisxhota?????")
+    let id
+    let userData 
+    if (vault_id == 0){
+      id = req.params.id
+    } else {
+      id = vault_id
+    }
+    if (vault_id == 0){
+      userData = req.user
+    } else {
+      userData = "Mono"
+    }
     const jogosComConquistas = await pegarDados(id)
     // Mapeia os jogos buscando as conquistas de forma paralela e segura;
 
-    console.log(`Tem a vaultAccount?${hasVaultAccount}`)
+    console.log(`Tem a vaultAccount? ${hasVaultAccount}`)
     res.setHeader("Content-Type", "application/json");
     res.json({
       infoUsuario: userData._json,
@@ -176,8 +190,13 @@ app.get("/dados/user/jogos/:id", isAuthenticated, async (req, res) => {
 // =========================================================================
 app.get("/dados/user/jogos/:id/conquistas/:appId", isAuthenticated, async (req, res) => {
   try {
-    const { id, appId } = req.params;
-
+    let id
+    if (vault_id == 0){
+      id = req.params.id
+    } else {
+      id = vault_id
+    }
+    const appId = req.params.appId
     // 1. Busca quais conquistas o jogador específico desbloqueou e a data
     const playerAchievementsUrl = `https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/?appid=${appId}&key=${API_KEY}&steamid=${id}&l=brazilian`;
     const playerRes = await axios.get(playerAchievementsUrl);
@@ -234,10 +253,18 @@ app.get("/dados/user/jogos/:id/conquistas/:appId", isAuthenticated, async (req, 
 
 
 app.post("/cadastro", isAuthenticated, async (req, res) => {
-  const dados = await pegarDados(req.user._json.steamid)
+  let dados 
+  let steamId
+  if (vault_id == 0){
+    dados = await pegarDados(req.user._json.steamid)
+    steamId = req.user._json.steamid
+  } else {
+    console.log(`O LUCA É VIADO??`)
+    dados = await pegarDados(vault_id)
+    steamId = vault_id
+  }
   const stats = await calcularStats(dados)
   console.log(stats)
-  const steamId = req.user._json.steamid
   const email = req.body.email
   const senhaCrua = req.body.senha
 
@@ -246,37 +273,43 @@ app.post("/cadastro", isAuthenticated, async (req, res) => {
     if (checkIfExists.rows.length > 0) {
       res.send(`Conta já existe`)
     } else {
-      bcrypt.hash(senhaCrua, saltRounds, async (err, senhaCriptografada) => {
-        db.query("INSERT INTO vault_accounts VALUES($1, $2, $3)", [steamId, email, senhaCriptografada], (err) => {
+      //bcrypt.hash(senhaCrua, saltRounds, async (err, senhaCriptografada) => {
+        db.query("INSERT INTO vault_accounts VALUES($1, $2, $3)", [steamId, email, senhaCrua], (err) => {
           if (err) {
-            console.log(`Erro durante a inserção de dados: ${err}`)
+            //console.log(`Erro durante a inserção de dados: ${err}`)
             res.sendStatus(500).send(`Erro durante a inserção de dados ${err}`)
           } else {
-            hasVaultAccount = true
-            db.query("INSERT INTO vault_profiles VALUES($1, $2, $3, $4, $5, $6)", [steamId, stats.totalPlatinados, stats.totalUnlocked, stats.totalJogos, stats.totalHoras, Math.round(stats.totalPoint)], (err) => {
-              if (err) {
-                console.log(`Erro durante a inserção de dados na table profile: ${err}`)
-                res.sendStatus(500).send(`Erro durante a inserção de dados na table profile ${err}`)
-              } else {
-                res.redirect(`${URL_REACT}/games`)
-              }
-            })
+
+            res.redirect(`${URL_REACT}/Games`)
           }
         })
-      })
-
     }
   } catch (error) {
     console.log(`Erro interno no servidor: ${error}`)
   }
 })
 
+
 app.post("/login", async (req, res) => {
   const email = req.body.email
   const senhaCrua = req.body.senha
   try {
     const result = await db.query("SELECT * FROM vault_accounts WHERE email = $1", [email])
-    console.log(result.rows)
+    console.log(`o console.log tá parando aqui?`)
+    console.log(result)
+    console.log(`-------`)
+    if (result.rowCount < 0){
+      res.json({ status: "Usuário não encontrado" });
+    } else {
+      const check = await db.query("SELECT * FROM vault_accounts WHERE email = $1 AND password = $2", [email, senhaCrua])
+      if (check.rows.length > 0){ 
+        hasVaultAccount = true
+        console.log("penisxota")
+        console.log(check.rows[0].steam_id)
+        vault_id = check.rows[0].steam_id
+        res.redirect(`${URL_REACT}/games`)
+      }
+    }
   } catch (error) {
     console.log(error)
   }
@@ -288,6 +321,9 @@ passport.serializeUser((user, cb) => {
 passport.deserializeUser((user, cb) => {
   cb(null, user);
 });
+
+
+
 
 
 
@@ -327,7 +363,7 @@ async function pegarDados(id) {
             unlocked: unlocked,
             total: total,
             pct: pct,
-            vaultAccount: hasVaultAccount
+            vaultAccount: checarConta(id)
           };
         }
       } catch (err) {
@@ -364,5 +400,17 @@ async function calcularStats(listaJogos) {
   return response
 }
 
+async function checarConta(id, existe = 0){
+  let resposta = {}
+  console.log(`ID dele = ${id}, e existe? ${existe}`)
+  try{
+    const result = await db.query("SELECT steam_id FROM vault_accounts WHERE steam_id = $1", [id])
+    resposta = {existe: result.rows.length, steam_id: result.rows.steam_id}
+    console.log(resposta)
+    return resposta
+  } catch (err){
+    console.log(`Erro na checagem de conta: ${err}`)
+  }
+}
 
 // Middleware to protect API routes
