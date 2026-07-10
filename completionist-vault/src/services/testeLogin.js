@@ -6,74 +6,69 @@ import passport from "passport";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import path from "path";
-import pg from "pg"
-import bcrypt from "bcrypt"
+import pg from "pg";
+import bcrypt from "bcrypt";
+import { Strategy as SteamStrategy } from "passport-steam";
+import { Await } from "react-router";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
-import { Strategy as SteamStrategy } from "passport-steam";
-
-const port = 3000; // Porta do Backend
-const URL_REACT = "http://localhost:5173"; // MUDE ISSO para a porta que o seu React estiver rodando
-const app = express();
+const port = 3000;
+const URL_REACT = "http://localhost:5173";
 const saltRounds = 10;
-const portaAPI = 3000
-let hasVaultAccount = false
-let vault_id = 0
-// 2. Ajuste CRÍTICO no CORS para permitir o envio de cookies de sessão
+const API_KEY = process.env.API_KEY;
+
+const app = express();
+
+// ==========================================
+// CONFIGURAÇÕES GERAIS
+// ==========================================
+
 app.use(
   cors({
     origin: URL_REACT,
     credentials: true,
-  }),
+  })
 );
 
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); // Necessário para ler req.body em requisições POST com JSON
 
-// 3. Configurando a Sessão (Obrigatório para o Passport funcionar)
-// Inicializa a sessão e configura o comportamento dos cookies
 app.use(
   session({
-    secret:
-      process.env.SESSION_SECRET || "uma_chave_secreta_qualquer_para_testes",
+    secret: process.env.SESSION_SECRET || "uma_chave_secreta_qualquer_para_testes",
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 24 * 60 * 60 * 1000, // Cookie lasts 1 day
-      secure: false, // MUST be false for http://localhost (no HTTPS)
-      httpOnly: true, // Prevents client-side JS scripts from hijacking it
+      maxAge: 24 * 60 * 60 * 1000,
+      secure: false, // true em produção com HTTPS
+      httpOnly: true,
     },
-  }),
+  })
 );
 
-const isAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return next(); // User is logged in, proceed to the route handler
-  }
-  // User is not logged in, send an unauthorized error
-  res.status(401).json({ error: "Unauthorized: Please log in first." });
-};
-
-
-
-// 4. Inicializando o Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-const API_KEY = process.env.API_KEY;
+// ==========================================
+// BANCO DE DADOS
+// ==========================================
 
 const db = new pg.Client({
   user: "postgres",
   database: "completionistVault",
   password: process.env.DATABASE_PASSWORD,
-  port: 5432
-})
+  port: 5432,
+});
 
-db.connect()
+db.connect().catch((err) => console.error("Erro ao conectar no banco:", err));
 
-// 5. Configurando a Estratégia da Steam
+// ==========================================
+// ESTRATÉGIA STEAM & MIDDLEWARES
+// ==========================================
+
 passport.use(
   new SteamStrategy(
     {
@@ -81,144 +76,115 @@ passport.use(
       realm: `http://localhost:${port}/`,
       apiKey: API_KEY,
     },
-    function (identifier, profile, done) {
-      // O login deu certo! O profile tem os dados do jogador
-      console.log(
-        `retorno da conversa com a steam com o passport ${profile.displayName}`,
-      );
+    (identifier, profile, done) => {
+      console.log(`Login Steam bem-sucedido para: ${profile.displayName}`);
       return done(null, profile);
-    },
-  ),
+    }
+  )
 );
 
-// 6. Serialização (Salva o usuário na sessão)
+passport.serializeUser((user, cb) => cb(null, user));
+passport.deserializeUser((user, cb) => cb(null, user));
+
+const isAuthenticated = (req, res, next) => {
+  // Verifica tanto o login da Steam quanto o login customizado do Vault
+  if (req.isAuthenticated() || req.session.hasVaultAccount) {
+    return next();
+  }
+  res.status(401).json({ error: "Unauthorized: Please log in first." });
+};
 
 // ==========================================
-// ROTAS DE AUTENTICAÇÃO (PASSPORT)
+// ROTAS DE AUTENTICAÇÃO
 // ==========================================
 
-// Rota que o React chama para iniciar o login (via window.location.href)
 app.get("/auth/steam", passport.authenticate("steam"));
 
-// Rota de retorno após o usuário colocar a senha no site da Steam
 app.get(
   "/auth/steam/return",
   passport.authenticate("steam", { failureRedirect: URL_REACT }),
   (req, res) => {
-    // Deu certo! Manda de volta pro React (Agora manda para o /Games. Luca esteve Aqui)
     res.redirect(`${URL_REACT}/Games`);
-  },
+  }
 );
 
-// -----Rota para o React saber quem está logado
-//---- Primeira Versão sem VaultAccount
- app.get("/api/user", (req, res) => {
-  if (hasVaultAccount) {
-    console.log(`steam id? ${vault_id} ---- tem conta? ${hasVaultAccount}`)
-    res.json(vault_id)
-  } else if (req.authenticate()){
+app.get("/api/user", (req, res) => {
+  if (req.session.hasVaultAccount) {
+    const personaData = await getPersona(req.session.vault_id)
+    res.json({ steamId: req.session.vault_id, personaInfo: personaData, isVault: true });
+  } else if (req.isAuthenticated()) {
     res.json(req.user);
-  }else {
+  } else {
     res.status(401).json({ error: "Usuário não autenticado" });
   }
-}); 
+});
 
- 
-// ---Rota para Logout
 app.get("/logout", (req, res, next) => {
   req.logout((err) => {
-    if (err) {
-      return next(err);
-    }
-
+    if (err) return next(err);
+    
     req.session.destroy((err) => {
       if (err) {
-        return res.status(500).json({
-          error: "Erro ao encerrar a sessão"
-        });
+        return res.status(500).json({ error: "Erro ao encerrar a sessão" });
       }
-
       res.clearCookie("connect.sid");
-      vault_id = 0
-      hasVaultAccount = false
-      return res.status(200).json({
-        message: "Logout realizado com sucesso"
-      });
+      return res.status(200).json({ message: "Logout realizado com sucesso" });
     });
   });
 });
 
+
+
 // ==========================================
-// SUAS ROTAS ORIGINAIS
+// ROTAS DE DADOS (JOGOS E CONQUISTAS)
 // ==========================================
+
 app.get("/dados/user/jogos/:id", isAuthenticated, async (req, res) => {
   try {
-    console.log("penisxhota?????")
-    let id
-    let userData 
-    if (vault_id == 0){
-      id = req.params.id
-    } else {
-      id = vault_id
-    }
-    if (vault_id == 0){
-      userData = req.user
-    } else {
-      userData = "Mono"
-    }
-    const jogosComConquistas = await pegarDados(id)
-    // Mapeia os jogos buscando as conquistas de forma paralela e segura;
+    const id = req.session.vault_id || req.params.id;
+    const infoUser = await getPersona(id)
+    console.log(infoUser.personaInfo.personaname)
+    const userData = req.session.vault_id ? { persona: infoUser.personaInfo.personaname, steamid: req.session.vault_id } : req.user._json;
+    
+    const jogosComConquistas = await pegarDados(id);
 
-    console.log(`Tem a vaultAccount? ${hasVaultAccount}`)
-    res.setHeader("Content-Type", "application/json");
     res.json({
-      infoUsuario: userData._json,
+      infoUsuario: userData,
       jogosUsuario: {
         response: {
-          games: jogosComConquistas
+          games: jogosComConquistas,
         },
-        vaultAccount: hasVaultAccount
+        vaultAccount: req.session.hasVaultAccount || false,
       },
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Erro interno ao processar a biblioteca com conquistas." });
+    res.status(500).json({ error: "Erro interno ao processar a biblioteca." });
   }
 });
-// =========================================================================
-// NOVA ROTA: OBTENÇÃO DINÂMICA DE CONQUISTAS DO JOGO POR USUÁRIO
-// =========================================================================
+
 app.get("/dados/user/jogos/:id/conquistas/:appId", isAuthenticated, async (req, res) => {
   try {
-    let id
-    if (vault_id == 0){
-      id = req.params.id
-    } else {
-      id = vault_id
-    }
-    const appId = req.params.appId
-    // 1. Busca quais conquistas o jogador específico desbloqueou e a data
+    const id = req.session.vault_id || req.params.id;
+    const appId = req.params.appId;
+
     const playerAchievementsUrl = `https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/?appid=${appId}&key=${API_KEY}&steamid=${id}&l=brazilian`;
     const playerRes = await axios.get(playerAchievementsUrl);
     const playerStats = playerRes.data.playerstats;
 
-    // 2. Busca o Schema do Jogo para pegar títulos amigáveis, descrições e ícones das conquistas
     const gameSchemaUrl = `https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=${API_KEY}&appid=${appId}&l=brazilian`;
     const schemaRes = await axios.get(gameSchemaUrl);
     const gameSchema = schemaRes.data.game.availableGameStats?.achievements || [];
 
-    // Mapeia e cruza as conquistas do jogador com os detalhes globais do Schema
     const achievementsFormatted = gameSchema.map((sch, index) => {
-      const playerAch = playerStats.achievements?.find(a => a.apiname === sch.name);
-
-      // Formata a data se estiver desbloqueada
+      const playerAch = playerStats.achievements?.find((a) => a.apiname === sch.name);
+      
       let formattedDate = null;
       if (playerAch?.unlocktime) {
         const dateObj = new Date(playerAch.unlocktime * 1000);
-        formattedDate = dateObj.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+        formattedDate = dateObj.toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
       }
 
-      // Determinação simples de raridade com base nas regras existentes no frontend
       let rarity = "common";
       if (index % 4 === 0) rarity = "legendary";
       else if (index % 3 === 0) rarity = "epic";
@@ -231,7 +197,7 @@ app.get("/dados/user/jogos/:id/conquistas/:appId", isAuthenticated, async (req, 
         iconUrl: sch.icon,
         rarity: rarity,
         unlocked: playerAch ? playerAch.achieved === 1 : false,
-        date: formattedDate
+        date: formattedDate,
       };
     });
 
@@ -242,118 +208,38 @@ app.get("/dados/user/jogos/:id/conquistas/:appId", isAuthenticated, async (req, 
       accentColor: "#f5c518",
       platform: "Steam",
       achievements: achievementsFormatted,
-      vaultAccount: hasVaultAccount
+      vaultAccount: req.session.hasVaultAccount || false,
     });
-
   } catch (error) {
-    console.error("Erro ao buscar conquistas na API da Steam:", error.message);
+    console.error("Erro ao buscar conquistas:", error.message);
     res.status(500).json({ error: "Erro ao obter conquistas da Steam" });
   }
 });
 
-
-app.post("/cadastro", isAuthenticated, async (req, res) => {
-  let dados 
-  let steamId
-  if (vault_id == 0){
-    dados = await pegarDados(req.user._json.steamid)
-    steamId = req.user._json.steamid
-  } else {
-    console.log(`O LUCA É VIADO??`)
-    dados = await pegarDados(vault_id)
-    steamId = vault_id
-  }
-  const stats = await calcularStats(dados)
-  console.log(stats)
-  const email = req.body.email
-  const senhaCrua = req.body.senha
-
-  try {
-    const checkIfExists = await db.query("SELECT * FROM vault_accounts WHERE steam_id = $1", [steamId])
-    if (checkIfExists.rows.length > 0) {
-      res.send(`Conta já existe`)
-    } else {
-      //bcrypt.hash(senhaCrua, saltRounds, async (err, senhaCriptografada) => {
-        db.query("INSERT INTO vault_accounts VALUES($1, $2, $3)", [steamId, email, senhaCrua], (err) => {
-          if (err) {
-            //console.log(`Erro durante a inserção de dados: ${err}`)
-            res.sendStatus(500).send(`Erro durante a inserção de dados ${err}`)
-          } else {
-
-            res.redirect(`${URL_REACT}/Games`)
-          }
-        })
-    }
-  } catch (error) {
-    console.log(`Erro interno no servidor: ${error}`)
-  }
-})
-
-
-app.post("/login", async (req, res) => {
-  const email = req.body.email
-  const senhaCrua = req.body.senha
-  try {
-    const result = await db.query("SELECT * FROM vault_accounts WHERE email = $1", [email])
-    console.log(`o console.log tá parando aqui?`)
-    console.log(result)
-    console.log(`-------`)
-    if (result.rowCount < 0){
-      res.json({ status: "Usuário não encontrado" });
-    } else {
-      const check = await db.query("SELECT * FROM vault_accounts WHERE email = $1 AND password = $2", [email, senhaCrua])
-      if (check.rows.length > 0){ 
-        hasVaultAccount = true
-        console.log("penisxota")
-        console.log(check.rows[0].steam_id)
-        vault_id = check.rows[0].steam_id
-        res.redirect(`${URL_REACT}/games`)
-      }
-    }
-  } catch (error) {
-    console.log(error)
-  }
-})
-
-passport.serializeUser((user, cb) => {
-  cb(null, user);
-});
-passport.deserializeUser((user, cb) => {
-  cb(null, user);
-});
-
-
-
-
-
-
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-  console.log(`Did the API KEY load?`, process.env.API_KEY ? "yes" : "no");
-});
+// ==========================================
+// FUNÇÕES AUXILIARES
+// ==========================================
 
 async function pegarDados(id) {
   const steamResponse = await axios.get(
-    `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${API_KEY}&steamid=${id}&format=json&include_appinfo=true&include_played_free_games=true`,
+    `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${API_KEY}&steamid=${id}&format=json&include_appinfo=true&include_played_free_games=true`
   );
-
-  // Pega a lista original de jogos retornada pela Steam
   const listaJogos = steamResponse.data.response?.games || [];
+  const vaultStatus = await checarConta(id);
+
   const jogosComConquistas = await Promise.all(
     listaJogos.map(async (jogo) => {
-      // Se o usuário nunca jogou o título, não gasta requisição com a API
       if (jogo.playtime_forever === 0) {
         return { ...jogo, has_achievements: false, unlocked: 0, total: 0, pct: 0 };
       }
 
       try {
-        // Busca o status atualizado de conquistas do usuário para este AppID
         const playerAchievementsUrl = `https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/?appid=${jogo.appid}&key=${API_KEY}&steamid=${id}`;
         const playerRes = await axios.get(playerAchievementsUrl);
         const achievements = playerRes.data.playerstats.achievements || [];
 
         if (achievements.length > 0) {
-          const unlocked = achievements.filter(a => a.achieved === 1).length;
+          const unlocked = achievements.filter((a) => a.achieved === 1).length;
           const total = achievements.length;
           const pct = Math.round((unlocked / total) * 100);
 
@@ -363,54 +249,61 @@ async function pegarDados(id) {
             unlocked: unlocked,
             total: total,
             pct: pct,
-            vaultAccount: checarConta(id)
+            vaultAccount: vaultStatus
           };
         }
       } catch (err) {
-        // Ignora erros caso o jogo não possua suporte oficial a conquistas na API
+        // Ignora erros de jogos sem conquistas
       }
-
       return { ...jogo, has_achievements: false, unlocked: 0, total: 0, pct: 0 };
-    }))
-  return jogosComConquistas
+    })
+  );
+  return jogosComConquistas;
 }
 
 async function calcularStats(listaJogos) {
-  const totalPlatinados = listaJogos.filter(g => g.total > 0 && g.unlocked === g.total).length;
-  const totalJogos = listaJogos.length
-  //Cálculo de conquistas totais 
+  const totalPlatinados = listaJogos.filter((g) => g.total > 0 && g.unlocked === g.total).length;
+  const totalJogos = listaJogos.length;
   const totalUnlocked = listaJogos.reduce((acc, g) => acc + (g.unlocked || 0), 0);
   const totalAchievementsPossiveis = listaJogos.reduce((acc, g) => acc + (g.total || 0), 0);
-
-  //Cálculo de horas totais
+  
   const totalHoras = listaJogos.reduce((acc, g) => {
-    // Ajeita o 'playtime_forever' que API envia em minutos, converte para horas dividindo por 60
-    const horasNumero = g.playtime_forever ? Math.floor(g.playtime_forever / 60) : 0;
-    return acc + horasNumero;
-  }, 0)
-  const totalPoints = (totalUnlocked + totalHoras) * 2.5
-  const response = {
-    totalPlatinados: totalPlatinados,
-    totalUnlocked: totalUnlocked,
-    totalAchievementsPossiveis: totalAchievementsPossiveis,
-    totalHoras: totalHoras,
-    totalJogos: totalJogos,
-    totalPoint: totalPoints
-  }
-  return response
+    return acc + (g.playtime_forever ? Math.floor(g.playtime_forever / 60) : 0);
+  }, 0);
+
+  const totalPoints = (totalUnlocked + totalHoras) * 2.5;
+  
+  return {
+    totalPlatinados,
+    totalUnlocked,
+    totalAchievementsPossiveis,
+    totalHoras,
+    totalJogos,
+    totalPoint: totalPoints,
+  };
 }
 
-async function checarConta(id, existe = 0){
-  let resposta = {}
-  console.log(`ID dele = ${id}, e existe? ${existe}`)
-  try{
-    const result = await db.query("SELECT steam_id FROM vault_accounts WHERE steam_id = $1", [id])
-    resposta = {existe: result.rows.length, steam_id: result.rows.steam_id}
-    console.log(resposta)
-    return resposta
-  } catch (err){
-    console.log(`Erro na checagem de conta: ${err}`)
+async function checarConta(id) {
+  try {
+    const result = await db.query("SELECT steam_id FROM vault_accounts WHERE steam_id = $1", [id]);
+    return { existe: result.rows.length > 0, steam_id: id };
+  } catch (err) {
+    console.error(`Erro na checagem de conta: ${err}`);
+    return { existe: false, steam_id: null };
   }
 }
 
-// Middleware to protect API routes
+async function getPersona(id){
+  const userData = await axios.get(
+    `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${API_KEY}&steamids=${id}`
+  )
+  return {personaInfo: userData.data.response.players[0]}
+}
+// ==========================================
+// INICIALIZAÇÃO
+// ==========================================
+
+app.listen(port, () => {
+  console.log(`Servidor rodando na porta ${port}`);
+  console.log(`API KEY carregada?`, process.env.API_KEY ? "Sim" : "Não");
+});
