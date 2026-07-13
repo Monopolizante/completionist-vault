@@ -24,6 +24,14 @@ function Profile() {
 
     const [loading, setLoading] = useState(true);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [dashboard, setDashboard] = useState({
+        summary: {
+            total_categories: 0,
+            total_games_in_categories: 0,
+            unique_games_organized: 0
+        },
+        categories: []
+    });
 
     useEffect(() => {
 
@@ -43,10 +51,16 @@ function Profile() {
                     { withCredentials: true }
                 );
 
+                const dashboardResponse = await axios.get(
+                    `http://localhost:${portaAPI}/api/dashboard`,
+                    { withCredentials: true }
+                );
+
                 const jogosSteam = dados.data.jogosUsuario?.response?.games || [];
 
                 setUser(userInfo.data);
                 setGames(jogosSteam);
+                setDashboard(dashboardResponse.data);
                 setIsLoggedIn(true);
 
                 calcularStats(jogosSteam, true);
@@ -208,6 +222,75 @@ function Profile() {
                 <ProfileHeader user={user} />
 
                 <StatsCards stats={stats} />
+
+
+                {isLoggedIn && (
+                    <section className="databaseDashboard">
+
+                        <div className="databaseDashboardHeader">
+                            <div>
+                                <span>Dados do PostgreSQL</span>
+                                <h2>Dashboard de Categorias</h2>
+                                <p>
+                                    Este painel é alimentado pelas tabelas categories e category_games.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="databaseDashboardStats">
+                            <article>
+                                <span>Categorias criadas</span>
+                                <strong>{dashboard.summary.total_categories || 0}</strong>
+                            </article>
+
+                            <article>
+                                <span>Vínculos de jogos</span>
+                                <strong>{dashboard.summary.total_games_in_categories || 0}</strong>
+                            </article>
+
+                            <article>
+                                <span>Jogos únicos organizados</span>
+                                <strong>{dashboard.summary.unique_games_organized || 0}</strong>
+                            </article>
+                        </div>
+
+                        <div className="databaseCategoriesGrid">
+                            {dashboard.categories.length === 0 ? (
+                                <p className="databaseEmptyState">
+                                    Nenhuma categoria cadastrada no banco de dados.
+                                </p>
+                            ) : (
+                                dashboard.categories.map((category) => (
+                                    <article className="databaseCategoryCard" key={category.id}>
+                                        <div>
+                                            <h3>{category.name}</h3>
+                                            <span>{category.total_games} jogo(s)</span>
+                                        </div>
+
+                                        <p>{category.description || "Categoria sem descrição."}</p>
+
+                                        <div className="databaseGameList">
+                                            {(category.games || []).length === 0 ? (
+                                                <small>Nenhum jogo adicionado.</small>
+                                            ) : (
+                                                category.games.map((game) => (
+                                                    <div key={`${category.id}-${game.appid}`}>
+                                                        <img
+                                                            src={`https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appid}/capsule_231x87.jpg`}
+                                                            alt={game.game_name}
+                                                        />
+                                                        <span>{game.game_name}</span>
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                    </article>
+                                ))
+                            )}
+                        </div>
+
+                    </section>
+                )}
 
                 <section className="profileSummaryPanel">
 

@@ -2,20 +2,26 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Importado para permitir o redirecionamento dinâmico
 import Navbar from '../Components/Navbar';
-import StatsBar from '../Components/StatsBar';
 import gamesData from '../Scripts/gamesData'; // Lista para quando esta deslogado
+import { useCategories } from '../contexts/CategoriesContext';
 
 // Importando os ícones necessários do Tabler Icons
 import {
+  IconEdit,
+  IconFolderPlus,
   IconLockOpen,
+  IconPlus,
   IconSearch,
-  IconTrophy
+  IconTrash,
+  IconTrophy,
+  IconX
 } from '@tabler/icons-react';
 
 import "../Styles/pages.css";
 import "../Styles/Animation.css";
 import "../Styles/Cards.css";
 import "../Styles/LibraryOverlay.css";
+import "../Styles/Categories.css";
 
 function GamesNew() {
   const navigate = useNavigate();
@@ -25,6 +31,26 @@ function GamesNew() {
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Controla o que exibe (Logado/Deslogado)
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Estados do CRUD de categorias
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
+  const [showAddGameModal, setShowAddGameModal] = useState(false);
+  const [selectedGame, setSelectedGame] = useState(null);
+  const [categoryName, setCategoryName] = useState('');
+  const [categoryDescription, setCategoryDescription] = useState('');
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [feedback, setFeedback] = useState('');
+
+  const {
+    categories,
+    categoriesLoading,
+    loadCategories,
+    createCategory,
+    updateCategory,
+    deleteCategory,
+    addGameToCategory,
+    removeGameFromCategory,
+  } = useCategories();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -44,6 +70,7 @@ function GamesNew() {
         if (dados.data.jogosUsuario?.response?.games) {
           setGames(dados.data.jogosUsuario.response.games);
           setIsLoggedIn(true);
+          await loadCategories();
         }
 
         setLoading(false);
@@ -55,7 +82,7 @@ function GamesNew() {
       }
     };
     pegarDadosUsuario();
-  }, []);
+  }, [loadCategories]);
 
   // Redireciona para o fluxo de autenticação da Steam
   const handleRedirectLogin = () => {
@@ -88,10 +115,98 @@ function GamesNew() {
     return true;
   });
 
-  
   const handleGameClick = (game) => {
     const idJogo = isLoggedIn ? game.appid : (game.id || game.appid);
     navigate(`/games/${idJogo}/achievements`);
+  };
+
+  const handleCreateCategory = async (event) => {
+    event.preventDefault();
+
+    if (!categoryName.trim()) {
+      setFeedback('Digite um nome para a categoria.');
+      return;
+    }
+
+    try {
+      if (editingCategory) {
+        await updateCategory(editingCategory.id, {
+          name: categoryName.trim(),
+          description: categoryDescription.trim(),
+        });
+        setFeedback('Categoria atualizada com sucesso.');
+      } else {
+        await createCategory({
+          name: categoryName.trim(),
+          description: categoryDescription.trim(),
+        });
+        setFeedback('Categoria criada com sucesso.');
+      }
+
+      setCategoryName('');
+      setCategoryDescription('');
+      setEditingCategory(null);
+      setShowCategoryForm(false);
+    } catch (error) {
+      setFeedback(error.response?.data?.error || 'Não foi possível criar a categoria.');
+    }
+  };
+
+
+  const openCreateCategory = () => {
+    setEditingCategory(null);
+    setCategoryName('');
+    setCategoryDescription('');
+    setShowCategoryForm(true);
+  };
+
+  const openEditCategory = (category) => {
+    setEditingCategory(category);
+    setCategoryName(category.name);
+    setCategoryDescription(category.description || '');
+    setShowCategoryForm(true);
+  };
+
+  const handleDeleteCategory = async (categoryId) => {
+    const confirmed = window.confirm('Deseja apagar esta categoria e todos os vínculos de jogos?');
+    if (!confirmed) return;
+
+    try {
+      await deleteCategory(categoryId);
+      setFeedback('Categoria apagada com sucesso.');
+    } catch (error) {
+      setFeedback(error.response?.data?.error || 'Não foi possível apagar a categoria.');
+    }
+  };
+
+  const openAddGameModal = (event, game) => {
+    event.stopPropagation();
+    setSelectedGame(game);
+    setShowAddGameModal(true);
+    setFeedback('');
+  };
+
+  const handleAddGame = async (categoryId) => {
+    if (!selectedGame) return;
+
+    try {
+      await addGameToCategory(categoryId, selectedGame);
+      setFeedback(`${selectedGame.name} foi adicionado à categoria.`);
+      setShowAddGameModal(false);
+    } catch (error) {
+      setFeedback(error.response?.data?.error || 'Não foi possível adicionar o jogo.');
+    }
+  };
+
+  const handleRemoveGame = async (event, categoryId, appid) => {
+    event.stopPropagation();
+
+    try {
+      await removeGameFromCategory(categoryId, appid);
+      setFeedback('Jogo removido da categoria.');
+    } catch (error) {
+      setFeedback(error.response?.data?.error || 'Não foi possível remover o jogo.');
+    }
   };
 
   // Só mostra tela de loading genérica enquanto a API (luta pela vida) de login original responde
@@ -132,11 +247,23 @@ function GamesNew() {
 
         {/* Todo o resto da interface recebe desfoque caso esteja deslogado */}
         <div className={!isLoggedIn ? "blur-content" : ""}>
-
-
           <div className='page-header'>
-            <h1 className='page-title'>My Library</h1>
-            <p className='page-subtitle'>{games.length} games in collection</p>
+            <div className="library-title-row">
+              <div>
+                <h1 className='page-title'>My Library</h1>
+                <p className='page-subtitle'>{games.length} games in collection</p>
+              </div>
+
+              {isLoggedIn && (
+                <button
+                  className="create-category-btn"
+                  onClick={openCreateCategory}
+                >
+                  <IconFolderPlus size={18} />
+                  Criar categoria
+                </button>
+              )}
+            </div>
 
             {/* Container unificado com Filtros e Barra de Pesquisa */}
             <div className="controls-container">
@@ -165,12 +292,78 @@ function GamesNew() {
             </div>
           </div>
 
+          {feedback && <div className="category-feedback">{feedback}</div>}
+
+          {isLoggedIn && (
+            <section className="categories-section">
+              <div className="categories-heading">
+                <div>
+                  <span>Organização do Vault</span>
+                  <h2>Suas categorias</h2>
+                </div>
+                <strong>{categories.length}</strong>
+              </div>
+
+              {categoriesLoading ? (
+                <p className="category-empty">Carregando categorias...</p>
+              ) : categories.length === 0 ? (
+                <p className="category-empty">Nenhuma categoria criada ainda. O cofre está ecoando.</p>
+              ) : (
+                <div className="categories-grid">
+                  {categories.map((category) => (
+                    <article className="category-card" key={category.id}>
+                      <div className="category-card-header">
+                        <div>
+                          <h3>{category.name}</h3>
+                          <p>{category.description || 'Sem descrição'}</p>
+                        </div>
+                        <div className="category-card-actions">
+                          <button
+                            className="category-edit-btn"
+                            onClick={() => openEditCategory(category)}
+                            title="Editar categoria"
+                          >
+                            <IconEdit size={17} />
+                          </button>
+                          <button
+                            className="category-delete-btn"
+                            onClick={() => handleDeleteCategory(category.id)}
+                            title="Apagar categoria"
+                          >
+                            <IconTrash size={17} />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="category-games-list">
+                        {(category.games || []).length === 0 ? (
+                          <span className="category-empty-small">Nenhum jogo nesta categoria.</span>
+                        ) : (
+                          category.games.map((categoryGame) => (
+                            <div className="category-game-chip" key={`${category.id}-${categoryGame.appid}`}>
+                              <span>{categoryGame.game_name || `App ${categoryGame.appid}`}</span>
+                              <button
+                                onClick={(event) => handleRemoveGame(event, category.id, categoryGame.appid)}
+                                title="Remover jogo da categoria"
+                              >
+                                <IconX size={14} />
+                              </button>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
+
           <div className="games-grid" id="games-grid">
             {filteredGames.map((g, index) => {
-
               const nomeJogo = g.name;
 
-              // código pra fazer o map e puxar as imagens pra mandar pro componente 
+              // código pra fazer o map e puxar as imagens pra mandar pro componente
               const urlImagem = isLoggedIn
                 ? `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${g.appid}/header.jpg`
                 : g.image; // Do arquivo mock local
@@ -180,10 +373,10 @@ function GamesNew() {
                 : g.hours; // Do arquivo mock local
 
               // Calcular porcentagem se tiver conquistas (Conectado dinamicamente com os dados reais mapeados do seu backend)
-              const porcentagemReal = isLoggedIn 
-                ? (g.has_achievements ? g.pct : 0) 
+              const porcentagemReal = isLoggedIn
+                ? (g.has_achievements ? g.pct : 0)
                 : g.pct; // Puxa do local se deslogado
-                
+
               const conquistasTexto = isLoggedIn
                 ? (g.has_achievements ? `${g.unlocked}/${g.total}` : "0/0")
                 : `${g.unlocked}/${g.total}`; // Puxa do local se deslogado
@@ -216,6 +409,15 @@ function GamesNew() {
                     ></div>
                     <div className="game-overlay"></div>
                     {isRecent && <div className="recently-played-badge">Recente</div>}
+                    {isLoggedIn && (
+                      <button
+                        className="add-game-category-btn"
+                        onClick={(event) => openAddGameModal(event, g)}
+                        title="Adicionar jogo a uma categoria"
+                      >
+                        <IconPlus size={17} />
+                      </button>
+                    )}
                   </div>
 
                   <div className="game-info">
@@ -254,8 +456,74 @@ function GamesNew() {
             })}
           </div>
         </div>
-
       </div>
+
+      {showCategoryForm && (
+        <div className="category-modal-backdrop" onClick={() => { setShowCategoryForm(false); setEditingCategory(null); }}>
+          <form className="category-modal" onSubmit={handleCreateCategory} onClick={(event) => event.stopPropagation()}>
+            <button type="button" className="modal-close-btn" onClick={() => setShowCategoryForm(false)}>
+              <IconX size={20} />
+            </button>
+            <span>{editingCategory ? 'Editar entidade' : 'Nova entidade'}</span>
+            <h2>{editingCategory ? 'Editar categoria' : 'Criar categoria'}</h2>
+            <label>
+              Nome
+              <input
+                value={categoryName}
+                onChange={(event) => setCategoryName(event.target.value)}
+                maxLength={100}
+                placeholder="Ex.: Quero completar"
+              />
+            </label>
+            <label>
+              Descrição
+              <textarea
+                value={categoryDescription}
+                onChange={(event) => setCategoryDescription(event.target.value)}
+                maxLength={255}
+                placeholder="Uma pequena descrição para a categoria"
+              />
+            </label>
+            <button className="modal-primary-btn" type="submit">{editingCategory ? 'Atualizar categoria' : 'Salvar categoria'}</button>
+          </form>
+        </div>
+      )}
+
+      {showAddGameModal && selectedGame && (
+        <div className="category-modal-backdrop" onClick={() => setShowAddGameModal(false)}>
+          <div className="category-modal" onClick={(event) => event.stopPropagation()}>
+            <button type="button" className="modal-close-btn" onClick={() => setShowAddGameModal(false)}>
+              <IconX size={20} />
+            </button>
+            <span>Adicionar jogo</span>
+            <h2>{selectedGame.name}</h2>
+            <p className="modal-helper">Escolha a categoria em que o jogo será salvo.</p>
+
+            <div className="modal-category-options">
+              {categories.length === 0 ? (
+                <p className="category-empty">Crie uma categoria antes de adicionar jogos.</p>
+              ) : (
+                categories.map((category) => {
+                  const alreadyAdded = (category.games || []).some(
+                    (game) => Number(game.appid) === Number(selectedGame.appid),
+                  );
+
+                  return (
+                    <button
+                      key={category.id}
+                      disabled={alreadyAdded}
+                      onClick={() => handleAddGame(category.id)}
+                    >
+                      <span>{category.name}</span>
+                      <small>{alreadyAdded ? 'Já adicionado' : `${category.total_games || 0} jogo(s)`}</small>
+                    </button>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
