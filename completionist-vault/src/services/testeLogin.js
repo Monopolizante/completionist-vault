@@ -31,7 +31,7 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json()); // Permite receber JSON enviado pelos formulários React
+app.use(express.json());
 
 // 3. Configurando a Sessão (Obrigatório para o Passport funcionar)
 // Inicializa a sessão e configura o comportamento dos cookies
@@ -70,7 +70,9 @@ const db = new pg.Client({
   port: 5432,
 });
 
-db.connect();
+db.connect()
+  .then(() => initializeCategoryTables())
+  .catch((error) => console.error("Erro ao conectar/inicializar PostgreSQL:", error));
 
 // 5. Configurando a Estratégia da Steam
 passport.use(
@@ -260,288 +262,195 @@ app.get(
 
 
 // ==========================================
-// CRUD DE CATEGORIAS E JOGOS
+// CRUD DE CATEGORIAS (POSTGRESQL)
 // ==========================================
-// O SteamID nunca vem do formulário. Ele é lido da sessão autenticada,
-// evitando que um usuário tente acessar as categorias de outro usuário.
-function getAuthenticatedSteamId(req) {
-  return req.user?._json?.steamid || req.user?.id || req.user?.steamid;
+const getLoggedSteamId = (req) =>
+  req.user?._json?.steamid || req.user?.id || req.user?.steamid;
+
+async function initializeCategoryTables() {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS categories (
+      id SERIAL PRIMARY KEY,
+      steam_id BIGINT NOT NULL,
+      name VARCHAR(60) NOT NULL,
+      description VARCHAR(180) DEFAULT '',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT fk_categories_vault_account
+        FOREIGN KEY (steam_id) REFERENCES vault_accounts(steam_id) ON DELETE CASCADE,
+      CONSTRAINT uq_category_name_per_user UNIQUE (steam_id, name)
+    )
+  `);
+
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS category_games (
+      category_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+      app_id BIGINT NOT NULL,
+      game_name VARCHAR(160) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (category_id, app_id)
+    )
+  `);
 }
 
-// CREATE: cadastra uma nova categoria no PostgreSQL
-app.post("/api/categories", isAuthenticated, async (req, res) => {
+async function listCategories(steamId) {
+  const result = await db.query(
+    `SELECT
+       c.id,
+       c.name,
+       c.description,
+       c.created_at,
+       c.updated_at,
+       COALESCE(
+         json_agg(
+           json_build_object('appId', cg.app_id, 'name', cg.game_name)
+           ORDER BY cg.game_name
+         ) FILTER (WHERE cg.app_id IS NOT NULL),
+         '[]'::json
+       ) AS games
+     FROM categories c
+     LEFT JOIN category_games cg ON cg.category_id = c.id
+     WHERE c.steam_id = $1
+     GROUP BY c.id
+     ORDER BY c.created_at DESC`,
+    [steamId],
+  );
+  return result.rows;
+}
+
+async function getOwnedCategory(categoryId, steamId) {
+  const result = await db.query(
+    "SELECT id FROM categories WHERE id = $1 AND steam_id = $2",
+    [categoryId, steamId],
+  );
+  return result.rows[0];
+}
+
+app.get("/api/categories", isAuthenticated, async (req, res) => {
   try {
-    const steamId = getAuthenticatedSteamId(req);
-    const name = String(req.body.name || "").trim();
-    const description = String(req.body.description || "").trim();
+    res.json(await listCategories(getLoggedSteamId(req)));
+  } catch (error) {
+    console.error("Erro ao listar categorias:", error);
+    res.status(500).json({ error: "Não foi possível carregar as categorias." });
+  }
+});
 
-    if (!name) {
-      return res.status(400).json({ error: "O nome da categoria é obrigatório." });
-    }
+app.post("/api/categories", isAuthenticated, async (req, res) => {
+  const steamId = getLoggedSteamId(req);
+  const name = String(req.body.name || "").trim();
+  const description = String(req.body.description || "").trim();
 
+  if (name.length < 2 || name.length > 60) {
+    return res.status(400).json({ error: "O nome deve ter entre 2 e 60 caracteres." });
+  }
+  if (description.length > 180) {
+    return res.status(400).json({ error: "A descrição deve ter no máximo 180 caracteres." });
+  }
+
+  try {
     const result = await db.query(
       `INSERT INTO categories (steam_id, name, description)
        VALUES ($1, $2, $3)
-       RETURNING id, steam_id, name, description, created_at, updated_at`,
-      [steamId, name, description || null],
+       RETURNING id, name, description, created_at, updated_at`,
+      [steamId, name, description],
     );
-
-    return res.status(201).json({ ...result.rows[0], games: [], total_games: 0 });
+    res.status(201).json({ ...result.rows[0], games: [] });
   } catch (error) {
-    console.error("Erro ao cadastrar categoria:", error);
-    return res.status(500).json({ error: "Erro ao cadastrar categoria." });
-  }
-});
-
-// READ: lista somente as categorias do usuário logado e os jogos vinculados
-app.get("/api/categories", isAuthenticated, async (req, res) => {
-  try {
-    const steamId = getAuthenticatedSteamId(req);
-
-    const result = await db.query(
-      `SELECT
-         c.id,
-         c.steam_id,
-         c.name,
-         c.description,
-         c.created_at,
-         c.updated_at,
-         COUNT(cg.id)::INTEGER AS total_games,
-         COALESCE(
-           JSON_AGG(
-             JSON_BUILD_OBJECT(
-               'id', cg.id,
-               'appid', cg.appid,
-               'game_name', cg.game_name,
-               'added_at', cg.added_at
-             ) ORDER BY cg.added_at DESC
-           ) FILTER (WHERE cg.id IS NOT NULL),
-           '[]'::JSON
-         ) AS games
-       FROM categories c
-       LEFT JOIN category_games cg ON cg.category_id = c.id
-       WHERE c.steam_id = $1
-       GROUP BY c.id
-       ORDER BY c.created_at DESC`,
-      [steamId],
-    );
-
-    return res.json(result.rows);
-  } catch (error) {
-    console.error("Erro ao ler categorias:", error);
-    return res.status(500).json({ error: "Erro ao carregar categorias." });
-  }
-});
-
-// READ individual: útil para carregar os dados atuais na tela de edição
-app.get("/api/categories/:categoryId", isAuthenticated, async (req, res) => {
-  try {
-    const steamId = getAuthenticatedSteamId(req);
-    const { categoryId } = req.params;
-
-    const result = await db.query(
-      `SELECT id, steam_id, name, description, created_at, updated_at
-       FROM categories
-       WHERE id = $1 AND steam_id = $2`,
-      [categoryId, steamId],
-    );
-
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Categoria não encontrada." });
+    if (error.code === "23505") {
+      return res.status(409).json({ error: "Você já possui uma categoria com esse nome." });
     }
-
-    return res.json(result.rows[0]);
-  } catch (error) {
-    console.error("Erro ao ler categoria:", error);
-    return res.status(500).json({ error: "Erro ao carregar categoria." });
+    console.error("Erro ao criar categoria:", error);
+    res.status(500).json({ error: "Não foi possível criar a categoria." });
   }
 });
 
-// UPDATE: edita nome e descrição da categoria
-app.put("/api/categories/:categoryId", isAuthenticated, async (req, res) => {
+app.put("/api/categories/:id", isAuthenticated, async (req, res) => {
+  const steamId = getLoggedSteamId(req);
+  const name = String(req.body.name || "").trim();
+  const description = String(req.body.description || "").trim();
+
+  if (name.length < 2 || name.length > 60 || description.length > 180) {
+    return res.status(400).json({ error: "Revise o nome e a descrição da categoria." });
+  }
+
   try {
-    const steamId = getAuthenticatedSteamId(req);
-    const { categoryId } = req.params;
-    const name = String(req.body.name || "").trim();
-    const description = String(req.body.description || "").trim();
-
-    if (!name) {
-      return res.status(400).json({ error: "O nome da categoria é obrigatório." });
-    }
-
     const result = await db.query(
       `UPDATE categories
        SET name = $1, description = $2, updated_at = CURRENT_TIMESTAMP
        WHERE id = $3 AND steam_id = $4
-       RETURNING id, steam_id, name, description, created_at, updated_at`,
-      [name, description || null, categoryId, steamId],
+       RETURNING id, name, description, created_at, updated_at`,
+      [name, description, req.params.id, steamId],
     );
+    if (!result.rows[0]) return res.status(404).json({ error: "Categoria não encontrada." });
 
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Categoria não encontrada." });
-    }
-
-    const gamesResult = await db.query(
-      `SELECT id, appid, game_name, added_at
-       FROM category_games
-       WHERE category_id = $1
-       ORDER BY added_at DESC`,
-      [categoryId],
-    );
-
-    return res.json({
-      ...result.rows[0],
-      games: gamesResult.rows,
-      total_games: gamesResult.rowCount,
-    });
+    const categories = await listCategories(steamId);
+    res.json(categories.find((category) => category.id === result.rows[0].id));
   } catch (error) {
-    console.error("Erro ao atualizar categoria:", error);
-    return res.status(500).json({ error: "Erro ao atualizar categoria." });
+    if (error.code === "23505") {
+      return res.status(409).json({ error: "Você já possui uma categoria com esse nome." });
+    }
+    console.error("Erro ao editar categoria:", error);
+    res.status(500).json({ error: "Não foi possível editar a categoria." });
   }
 });
 
-// DELETE: apaga a categoria. Os vínculos são removidos por ON DELETE CASCADE.
-app.delete("/api/categories/:categoryId", isAuthenticated, async (req, res) => {
+app.delete("/api/categories/:id", isAuthenticated, async (req, res) => {
   try {
-    const steamId = getAuthenticatedSteamId(req);
-    const { categoryId } = req.params;
-
     const result = await db.query(
-      `DELETE FROM categories
-       WHERE id = $1 AND steam_id = $2
-       RETURNING id`,
-      [categoryId, steamId],
+      "DELETE FROM categories WHERE id = $1 AND steam_id = $2 RETURNING id",
+      [req.params.id, getLoggedSteamId(req)],
     );
-
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Categoria não encontrada." });
-    }
-
-    return res.json({ message: "Categoria apagada com sucesso." });
+    if (!result.rows[0]) return res.status(404).json({ error: "Categoria não encontrada." });
+    res.status(204).send();
   } catch (error) {
     console.error("Erro ao apagar categoria:", error);
-    return res.status(500).json({ error: "Erro ao apagar categoria." });
+    res.status(500).json({ error: "Não foi possível apagar a categoria." });
   }
 });
 
-// CREATE do relacionamento: adiciona um jogo da biblioteca a uma categoria
-app.post("/api/categories/:categoryId/games", isAuthenticated, async (req, res) => {
+app.post("/api/categories/:id/games", isAuthenticated, async (req, res) => {
+  const steamId = getLoggedSteamId(req);
+  const appId = Number(req.body.appId);
+  const gameName = String(req.body.gameName || "").trim();
+
+  if (!Number.isSafeInteger(appId) || appId <= 0 || !gameName) {
+    return res.status(400).json({ error: "Jogo inválido." });
+  }
+
   try {
-    const steamId = getAuthenticatedSteamId(req);
-    const { categoryId } = req.params;
-    const appid = Number(req.body.appid);
-    const gameName = String(req.body.gameName || "").trim();
-
-    if (!Number.isInteger(appid) || appid <= 0) {
-      return res.status(400).json({ error: "AppID inválido." });
-    }
-
-    const categoryResult = await db.query(
-      "SELECT id FROM categories WHERE id = $1 AND steam_id = $2",
-      [categoryId, steamId],
-    );
-
-    if (categoryResult.rowCount === 0) {
+    if (!(await getOwnedCategory(req.params.id, steamId))) {
       return res.status(404).json({ error: "Categoria não encontrada." });
     }
-
-    const result = await db.query(
-      `INSERT INTO category_games (category_id, appid, game_name)
+    await db.query(
+      `INSERT INTO category_games (category_id, app_id, game_name)
        VALUES ($1, $2, $3)
-       ON CONFLICT (category_id, appid) DO NOTHING
-       RETURNING id, category_id, appid, game_name, added_at`,
-      [categoryId, appid, gameName || `App ${appid}`],
+       ON CONFLICT (category_id, app_id)
+       DO UPDATE SET game_name = EXCLUDED.game_name`,
+      [req.params.id, appId, gameName],
     );
-
-    if (result.rowCount === 0) {
-      return res.status(409).json({ error: "Este jogo já está na categoria." });
-    }
-
-    return res.status(201).json(result.rows[0]);
+    const categories = await listCategories(steamId);
+    res.json(categories.find((category) => category.id === Number(req.params.id)));
   } catch (error) {
-    console.error("Erro ao adicionar jogo na categoria:", error);
-    return res.status(500).json({ error: "Erro ao adicionar jogo na categoria." });
+    console.error("Erro ao adicionar jogo à categoria:", error);
+    res.status(500).json({ error: "Não foi possível adicionar o jogo." });
   }
 });
 
-// DELETE do relacionamento: remove somente o jogo escolhido da categoria
-app.delete(
-  "/api/categories/:categoryId/games/:appid",
-  isAuthenticated,
-  async (req, res) => {
-    try {
-      const steamId = getAuthenticatedSteamId(req);
-      const { categoryId, appid } = req.params;
-
-      const result = await db.query(
-        `DELETE FROM category_games cg
-         USING categories c
-         WHERE cg.category_id = c.id
-           AND c.id = $1
-           AND cg.appid = $2
-           AND c.steam_id = $3
-         RETURNING cg.id`,
-        [categoryId, appid, steamId],
-      );
-
-      if (result.rowCount === 0) {
-        return res.status(404).json({ error: "Jogo não encontrado na categoria." });
-      }
-
-      return res.json({ message: "Jogo removido da categoria." });
-    } catch (error) {
-      console.error("Erro ao remover jogo da categoria:", error);
-      return res.status(500).json({ error: "Erro ao remover jogo da categoria." });
-    }
-  },
-);
-
-// DASHBOARD: dados consolidados vindos do PostgreSQL para o Profile
-app.get("/api/dashboard", isAuthenticated, async (req, res) => {
+app.delete("/api/categories/:id/games/:appId", isAuthenticated, async (req, res) => {
+  const steamId = getLoggedSteamId(req);
   try {
-    const steamId = getAuthenticatedSteamId(req);
-
-    const summaryResult = await db.query(
-      `SELECT
-         COUNT(DISTINCT c.id)::INTEGER AS total_categories,
-         COUNT(cg.id)::INTEGER AS total_games_in_categories,
-         COUNT(DISTINCT cg.appid)::INTEGER AS unique_games_organized
-       FROM categories c
-       LEFT JOIN category_games cg ON cg.category_id = c.id
-       WHERE c.steam_id = $1`,
-      [steamId],
+    if (!(await getOwnedCategory(req.params.id, steamId))) {
+      return res.status(404).json({ error: "Categoria não encontrada." });
+    }
+    await db.query(
+      "DELETE FROM category_games WHERE category_id = $1 AND app_id = $2",
+      [req.params.id, req.params.appId],
     );
-
-    const categoriesResult = await db.query(
-      `SELECT
-         c.id,
-         c.name,
-         c.description,
-         COUNT(cg.id)::INTEGER AS total_games,
-         COALESCE(
-           JSON_AGG(
-             JSON_BUILD_OBJECT(
-               'appid', cg.appid,
-               'game_name', cg.game_name
-             ) ORDER BY cg.added_at DESC
-           ) FILTER (WHERE cg.id IS NOT NULL),
-           '[]'::JSON
-         ) AS games
-       FROM categories c
-       LEFT JOIN category_games cg ON cg.category_id = c.id
-       WHERE c.steam_id = $1
-       GROUP BY c.id
-       ORDER BY c.created_at DESC`,
-      [steamId],
-    );
-
-    return res.json({
-      summary: summaryResult.rows[0],
-      categories: categoriesResult.rows,
-    });
+    const categories = await listCategories(steamId);
+    res.json(categories.find((category) => category.id === Number(req.params.id)));
   } catch (error) {
-    console.error("Erro ao gerar dashboard:", error);
-    return res.status(500).json({ error: "Erro ao gerar dashboard." });
+    console.error("Erro ao remover jogo da categoria:", error);
+    res.status(500).json({ error: "Não foi possível remover o jogo." });
   }
 });
 

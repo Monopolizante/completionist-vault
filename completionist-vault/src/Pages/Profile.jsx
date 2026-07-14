@@ -36,38 +36,111 @@ function Profile() {
     useEffect(() => {
 
         const carregarPerfil = async () => {
+            const portaAPI = 3000;
+            const apiBase = `http://localhost:${portaAPI}`;
 
             try {
-
-                const portaAPI = 3000;
-
-                const userInfo = await axios.get(
-                    `http://localhost:${portaAPI}/api/user`,
-                    { withCredentials: true }
-                );
-
-                const dados = await axios.get(
-                    `http://localhost:${portaAPI}/dados/user/jogos/${userInfo.data.id}`,
-                    { withCredentials: true }
-                );
-
-                const dashboardResponse = await axios.get(
-                    `http://localhost:${portaAPI}/api/dashboard`,
-                    { withCredentials: true }
-                );
-
-                const jogosSteam = dados.data.jogosUsuario?.response?.games || [];
+                // A autenticação é verificada primeiro e de forma independente.
+                // Assim, um erro ao buscar jogos da Steam não transforma um usuário
+                // autenticado em visitante com dados de demonstração.
+                const userInfo = await axios.get(`${apiBase}/api/user`, {
+                    withCredentials: true
+                });
 
                 setUser(userInfo.data);
-                setGames(jogosSteam);
-                setDashboard(dashboardResponse.data);
                 setIsLoggedIn(true);
 
-                calcularStats(jogosSteam, true);
+                const steamId =
+                    userInfo.data?.id ||
+                    userInfo.data?._json?.steamid ||
+                    userInfo.data?.steamid;
+
+                // Jogos da Steam e dashboard do PostgreSQL são carregados separadamente.
+                // Se uma das APIs falhar, a outra continua aparecendo normalmente.
+                const [gamesResult, dashboardResult] = await Promise.allSettled([
+                    steamId
+                        ? axios.get(`${apiBase}/dados/user/jogos/${steamId}`, {
+                            withCredentials: true
+                        })
+                        : Promise.reject(new Error("Steam ID não encontrado na sessão.")),
+                    axios.get(`${apiBase}/api/dashboard`, {
+                        withCredentials: true
+                    })
+                ]);
+
+                if (gamesResult.status === "fulfilled") {
+                    const jogosSteam =
+                        gamesResult.value.data.jogosUsuario?.response?.games || [];
+
+                    setGames(jogosSteam);
+                    calcularStats(jogosSteam, true);
+                } else {
+                    console.error(
+                        "Não foi possível carregar os jogos da Steam:",
+                        gamesResult.reason
+                    );
+                    setGames([]);
+                    calcularStats([], true);
+                }
+
+                if (dashboardResult.status === "fulfilled") {
+                    setDashboard({
+                        summary: {
+                            total_categories: Number(
+                                dashboardResult.value.data?.summary?.total_categories || 0
+                            ),
+                            total_games_in_categories: Number(
+                                dashboardResult.value.data?.summary?.total_games_in_categories || 0
+                            ),
+                            unique_games_organized: Number(
+                                dashboardResult.value.data?.summary?.unique_games_organized || 0
+                            )
+                        },
+                        categories: dashboardResult.value.data?.categories || []
+                    });
+                } else {
+                    console.error(
+                        "A rota /api/dashboard falhou. Tentando carregar /api/categories:",
+                        dashboardResult.reason
+                    );
+
+                    // Compatibilidade com versões em que apenas o CRUD de categorias existe.
+                    try {
+                        const categoriesResponse = await axios.get(
+                            `${apiBase}/api/categories`,
+                            { withCredentials: true }
+                        );
+
+                        const categories = categoriesResponse.data || [];
+                        const allGames = categories.flatMap(
+                            (category) => category.games || []
+                        );
+                        const uniqueGames = new Set(
+                            allGames.map((game) => String(game.appid))
+                        );
+
+                        setDashboard({
+                            summary: {
+                                total_categories: categories.length,
+                                total_games_in_categories: allGames.length,
+                                unique_games_organized: uniqueGames.size
+                            },
+                            categories
+                        });
+                    } catch (categoriesError) {
+                        console.error(
+                            "Não foi possível carregar as categorias do banco:",
+                            categoriesError
+                        );
+                    }
+                }
 
             } catch (err) {
-
-                console.log("Usuário deslogado ou erro na API, carregando dados de demonstração.");
+                // Somente uma falha real na autenticação ativa os dados de demonstração.
+                console.log(
+                    "Usuário não autenticado. Carregando dados de demonstração.",
+                    err
+                );
 
                 setUser({
                     personaname: "Jogador Visitante",
@@ -76,15 +149,11 @@ function Profile() {
 
                 setGames(gamesData);
                 setIsLoggedIn(false);
-
                 calcularStats(gamesData, false);
 
             } finally {
-
                 setLoading(false);
-
             }
-
         };
 
         carregarPerfil();
@@ -231,9 +300,7 @@ function Profile() {
                             <div>
                                 <span>Dados do PostgreSQL</span>
                                 <h2>Dashboard de Categorias</h2>
-                                <p>
-                                    Este painel é alimentado pelas tabelas categories e category_games.
-                                </p>
+
                             </div>
                         </div>
 
@@ -273,15 +340,41 @@ function Profile() {
                                             {(category.games || []).length === 0 ? (
                                                 <small>Nenhum jogo adicionado.</small>
                                             ) : (
-                                                category.games.map((game) => (
-                                                    <div key={`${category.id}-${game.appid}`}>
-                                                        <img
-                                                            src={`https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appid}/capsule_231x87.jpg`}
-                                                            alt={game.game_name}
-                                                        />
-                                                        <span>{game.game_name}</span>
-                                                    </div>
-                                                ))
+                                                category.games.map((game) => {
+                                                    const appid = game.appid || game.appId;
+                                                    const steamGame = games.find(
+                                                        (libraryGame) => Number(libraryGame.appid) === Number(appid)
+                                                    );
+
+                                                    const gameName =
+                                                        game.game_name ||
+                                                        game.gameName ||
+                                                        game.name ||
+                                                        steamGame?.name ||
+                                                        `Jogo ${appid}`;
+
+                                                    const gameImage =
+                                                        game.image_url ||
+                                                        game.imageUrl ||
+                                                        game.image ||
+                                                        steamGame?.image ||
+                                                        `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${appid}/header.jpg`;
+
+                                                    return (
+                                                        <div key={`${category.id}-${appid}`}>
+                                                            <img
+                                                                src={gameImage}
+                                                                alt={gameName}
+                                                                onError={(event) => {
+                                                                    event.currentTarget.onerror = null;
+                                                                    event.currentTarget.src =
+                                                                        `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/header.jpg`;
+                                                                }}
+                                                            />
+                                                            <span>{gameName}</span>
+                                                        </div>
+                                                    );
+                                                })
                                             )}
                                         </div>
                                     </article>

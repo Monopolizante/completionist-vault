@@ -4,6 +4,24 @@ import axios from "axios";
 const CategoriesContext = createContext(null);
 const API_URL = "http://localhost:3000";
 
+// O backend novo usa appId/name. A tela original usa appid/game_name.
+// Esta normalização mantém os botões, o CSS e a estrutura visual existentes.
+function normalizeCategory(category) {
+  if (!category) return category;
+
+  const games = (category.games || []).map((game) => ({
+    ...game,
+    appid: game.appid ?? game.appId,
+    game_name: game.game_name ?? game.name,
+  }));
+
+  return {
+    ...category,
+    games,
+    total_games: category.total_games ?? games.length,
+  };
+}
+
 export function CategoriesProvider({ children }) {
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(false);
@@ -16,8 +34,9 @@ export function CategoriesProvider({ children }) {
         withCredentials: true,
       });
 
-      setCategories(response.data);
-      return response.data;
+      const normalized = response.data.map(normalizeCategory);
+      setCategories(normalized);
+      return normalized;
     } finally {
       setCategoriesLoading(false);
     }
@@ -30,8 +49,9 @@ export function CategoriesProvider({ children }) {
       { withCredentials: true },
     );
 
-    setCategories((current) => [response.data, ...current]);
-    return response.data;
+    const category = normalizeCategory(response.data);
+    setCategories((current) => [category, ...current]);
+    return category;
   }, []);
 
   const updateCategory = useCallback(async (categoryId, categoryData) => {
@@ -41,13 +61,14 @@ export function CategoriesProvider({ children }) {
       { withCredentials: true },
     );
 
+    const updatedCategory = normalizeCategory(response.data);
     setCategories((current) =>
       current.map((category) =>
-        category.id === categoryId ? response.data : category,
+        category.id === categoryId ? updatedCategory : category,
       ),
     );
 
-    return response.data;
+    return updatedCategory;
   }, []);
 
   const deleteCategory = useCallback(async (categoryId) => {
@@ -64,46 +85,36 @@ export function CategoriesProvider({ children }) {
     const response = await axios.post(
       `${API_URL}/api/categories/${categoryId}/games`,
       {
-        appid: game.appid,
+        appId: game.appid,
         gameName: game.name,
       },
       { withCredentials: true },
     );
 
+    const updatedCategory = normalizeCategory(response.data);
     setCategories((current) =>
-      current.map((category) => {
-        if (category.id !== categoryId) return category;
-
-        return {
-          ...category,
-          games: [...(category.games || []), response.data],
-          total_games: Number(category.total_games || 0) + 1,
-        };
-      }),
+      current.map((category) =>
+        category.id === categoryId ? updatedCategory : category,
+      ),
     );
 
-    return response.data;
+    return updatedCategory;
   }, []);
 
   const removeGameFromCategory = useCallback(async (categoryId, appid) => {
-    await axios.delete(
+    const response = await axios.delete(
       `${API_URL}/api/categories/${categoryId}/games/${appid}`,
       { withCredentials: true },
     );
 
+    const updatedCategory = normalizeCategory(response.data);
     setCategories((current) =>
-      current.map((category) => {
-        if (category.id !== categoryId) return category;
-
-        return {
-          ...category,
-          games: (category.games || []).filter(
-            (game) => Number(game.appid) !== Number(appid),
-          ),
-          total_games: Math.max(Number(category.total_games || 1) - 1, 0),
-        };
-      }),
+      current.map((category) =>
+        category.id === categoryId ? updatedCategory : category,
+      ),
     );
+
+    return updatedCategory;
   }, []);
 
   const value = useMemo(
